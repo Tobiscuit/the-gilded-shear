@@ -1,0 +1,26 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#0A192F"/>
+  
+  <!-- Border circle -->
+  <circle cx="256" cy="256" r="200" stroke="#C69F43" stroke-width="8" fill="none"/>
+  
+  <!-- Scissors icon (barber symbol) -->
+  <g transform="translate(256, 256)">
+    <!-- Left handle -->
+    <circle cx="-60" cy="80" r="25" fill="#EAA90F"/>
+    <!-- Right handle -->
+    <circle cx="60" cy="80" r="25" fill="#EAA90F"/>
+    
+    <!-- Blades -->
+    <path d="M -60 80 L 0 -80 L 60 80" stroke="#C69F43" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- Center pivot -->
+    <circle cx="0" cy="0" r="12" fill="#FFF8E7"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="256" y="440" font-family="serif" font-size="40" font-weight="bold" fill="#C69F43" text-anchor="middle">THE GILDED</text>
+  <text x="256" y="480" font-family="serif" font-size="40" font-weight="bold" fill="#C69F43" text-anchor="middle">SHEAR</text>
+</svg>
+
