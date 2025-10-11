@@ -1,6 +1,23 @@
-import designSystemRaw from '@/docs-private/design_system.json';
+// Design system temporarily disabled for deployment
+// import designSystemRaw from '@/docs-private/design_system.json';
 
-export const designSystem = designSystemRaw;
+// export const designSystem = designSystemRaw;
+
+// Temporary design system object
+export const designSystem = {
+  brandName: "The Gilded Shear",
+  colorPalette: {
+    primary: { hex: "#0A192F" },
+    secondary: { hex: "#C69F43" },
+    background: { hex: "#FFF8E7" },
+    accentAction: { hex: "#EAA90F" },
+    text: { hex: "#333333" }
+  },
+  typography: {
+    headings: { fontFamily: "'Playfair Display', serif" },
+    body: { fontFamily: "'Montserrat', sans-serif" }
+  }
+};
 
 // Type-safe color access
 export const colors = {
