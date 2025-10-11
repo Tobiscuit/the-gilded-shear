@@ -16,6 +16,10 @@ export const designSystem = {
   typography: {
     headings: { fontFamily: "'Playfair Display', serif" },
     body: { fontFamily: "'Montserrat', sans-serif" }
+  },
+  archetype: {
+    primary: "The Creator / The Artisan",
+    secondary: "The Magician"
   }
 };
 
