@@ -1,7 +1,9 @@
-import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { getFirestore, Firestore } from 'firebase/firestore';
-import { getMessaging, Messaging, isSupported } from 'firebase/messaging';
+import { initializeApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+import { getMessaging } from 'firebase/messaging';
 
+// Firebase configuration
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -9,30 +11,23 @@ const firebaseConfig = {
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase (singleton pattern)
-let app: FirebaseApp;
-let db: Firestore;
-let messaging: Messaging | null = null;
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
-if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
-  db = getFirestore(app);
-} else {
-  app = getApps()[0];
-  db = getFirestore(app);
-}
+// Initialize Firebase services
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+export const messaging = getMessaging(app);
 
-// Initialize Firebase Cloud Messaging (only in browser)
-if (typeof window !== 'undefined') {
-  isSupported().then((supported) => {
-    if (supported) {
-      messaging = getMessaging(app);
-    }
-  });
-}
+// Google Auth Provider
+export const googleProvider = new GoogleAuthProvider();
 
-export { app, db, messaging };
+// Admin email whitelist
+export const ADMIN_EMAILS = [
+  'cousin@gmail.com', // Replace with actual cousin's email
+  'your-email@gmail.com', // Replace with your email for testing
+];
 
+export default app;
