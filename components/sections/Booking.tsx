@@ -29,7 +29,7 @@ export default function Booking() {
   };
 
   return (
-    <section id="booking" className="py-16 bg-white">
+    <section id="booking" className="py-16" style={{backgroundColor: '#FFF8E7'}}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl md:text-4xl font-display font-bold text-center text-gray-900 mb-4">
           Book Your Appointment

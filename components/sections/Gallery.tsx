@@ -35,7 +35,7 @@ export default function Gallery() {
   ];
 
   return (
-    <section id="gallery" className="py-16 bg-gray-50">
+    <section id="gallery" className="py-16" style={{backgroundColor: '#FFF8E7'}}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-4xl md:text-5xl font-display font-bold text-center text-gray-900 mb-12">
           Our Work

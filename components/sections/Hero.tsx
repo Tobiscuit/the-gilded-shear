@@ -19,7 +19,7 @@ export default function Hero() {
   };
 
   return (
-    <div className="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden bg-gray-50">
+    <div className="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden" style={{backgroundColor: '#FFF8E7'}}>
       <header className="absolute top-0 left-0 right-0 z-10 px-4 py-3">
         <div className="container mx-auto flex justify-between items-center">
           <div className="text-gray-800 font-display text-2xl font-bold">
@@ -94,7 +94,7 @@ export default function Hero() {
           <div className="layout-content-container flex flex-col w-full flex-1">
             <div className="@container">
               <div className="flex flex-col-reverse lg:flex-row items-center min-h-screen">
-                <div className="w-full lg:w-1/2 flex justify-center py-10 px-4 sm:px-8 lg:px-16 bg-white">
+                <div className="w-full lg:w-1/2 flex justify-center py-10 px-4 sm:px-8 lg:px-16" style={{backgroundColor: '#FFF8E7'}}>
                   <div className="max-w-md text-center lg:text-left">
                     <h1 className="text-gray-900 font-display text-5xl md:text-7xl font-bold leading-tight">
                       Mastering the Craft of Style

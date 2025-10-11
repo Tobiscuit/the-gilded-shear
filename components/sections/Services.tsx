@@ -2,7 +2,7 @@
 
 export default function Services() {
   return (
-    <section id="services" className="py-16 bg-white">
+    <section id="services" className="py-16" style={{backgroundColor: '#FFF8E7'}}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-4xl md:text-5xl font-display font-bold text-center text-gray-900 mb-12">
           Our Services
