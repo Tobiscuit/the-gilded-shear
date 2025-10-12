@@ -1,0 +1,19 @@
+# Firebase Functions (deployed separately)
+functions/
+
+# Firebase files
+.firebaserc
+firebase.json
+firestore.rules
+firestore.indexes.json
+
+# Private documentation
+docs-private/
+
+# Credentials
+credentials/
+
+# Environment files
+.env.local
+.env*.local
+
