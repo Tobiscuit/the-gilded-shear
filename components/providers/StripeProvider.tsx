@@ -6,16 +6,17 @@ import { ReactNode } from 'react';
 
 interface StripeProviderProps {
   children: ReactNode;
-  clientSecret?: string;
+  clientSecret?: string | null;
 }
 
 export default function StripeProvider({ children, clientSecret }: StripeProviderProps) {
-  const options = clientSecret 
-    ? { clientSecret }
-    : { mode: 'payment' as const };
+  // Only render Elements if we have a clientSecret
+  if (!clientSecret) {
+    return <>{children}</>;
+  }
 
   return (
-    <Elements stripe={stripePromise} options={options}>
+    <Elements stripe={stripePromise} options={{ clientSecret }}>
       {children}
     </Elements>
   );
