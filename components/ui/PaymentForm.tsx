@@ -149,9 +149,16 @@ function PaymentFormContent({
 export default function PaymentForm(props: PaymentFormProps) {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
-  // Create payment intent when component mounts
+  // Create payment intent only once when component mounts
+  // Stripe Elements doesn't allow changing clientSecret after initialization
   useEffect(() => {
+    // Prevent re-initialization if already created
+    if (hasInitialized) {
+      return;
+    }
+
     const createPaymentIntent = async () => {
       try {
         const service = SERVICES.find(s => s.name === props.selectedService);
@@ -183,6 +190,7 @@ export default function PaymentForm(props: PaymentFormProps) {
 
         const { clientSecret } = await response.json();
         setClientSecret(clientSecret);
+        setHasInitialized(true);
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : 'Failed to initialize payment';
         props.onPaymentError(errorMsg);
@@ -192,7 +200,8 @@ export default function PaymentForm(props: PaymentFormProps) {
     };
 
     createPaymentIntent();
-  }, [props]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - only run once on mount
 
   // Show loading state while creating payment intent
   if (isLoading) {

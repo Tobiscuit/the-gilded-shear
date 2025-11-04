@@ -7,7 +7,7 @@ admin.initializeApp();
 
 // Initialize Stripe
 const stripe = new Stripe(functions.config().stripe.secret_key, {
-  apiVersion: '2025-09-30.clover',
+  apiVersion: '2024-11-20.acacia',
 });
 
 // Cloud Function to handle new booking notifications
