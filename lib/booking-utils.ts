@@ -70,16 +70,17 @@ export function generateTimeSlots(date: string): string[] {
   const [openHour, openMinute] = hours.open.split(':').map(Number);
   const [closeHour, closeMinute] = hours.close.split(':').map(Number);
   
-  // Check if this is today or in the past
+  // Check if this is today - use consistent date comparison
   const today = new Date();
+  today.setUTCHours(0, 0, 0, 0); // Normalize to UTC midnight
   const selectedDate = new Date(date + 'T00:00:00.000Z');
-  const isToday = selectedDate.toDateString() === today.toDateString();
-  const isPast = selectedDate < today;
   
   // If the date is in the past, no slots available
-  if (isPast) {
+  if (selectedDate < today) {
     return [];
   }
+  
+  const isToday = selectedDate.getTime() === today.getTime();
   
   // Get current time to filter out past slots for today
   let minHour = openHour;
@@ -88,8 +89,9 @@ export function generateTimeSlots(date: string): string[] {
   if (isToday) {
     // Add buffer time (can't book within X hours of current time)
     const bufferHours = BOOKING_CONFIG.MIN_ADVANCE_BOOKING_HOURS;
-    const currentHour = today.getHours();
-    const currentMinute = today.getMinutes();
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
     
     // Calculate minimum time (current time + buffer)
     minHour = currentHour + bufferHours;
@@ -105,6 +107,12 @@ export function generateTimeSlots(date: string): string[] {
     
     // If buffer extends past business hours, no slots available today
     if (minHour >= closeHour || (minHour === closeHour && minMinute >= closeMinute)) {
+      return [];
+    }
+    
+    // Also ensure we're not trying to book in the past
+    // If it's already past close time (accounting for buffer), no slots
+    if (currentHour >= closeHour || (currentHour === closeHour && currentMinute >= closeMinute)) {
       return [];
     }
   }

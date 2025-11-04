@@ -43,6 +43,7 @@ function PaymentFormContent({
     event.preventDefault();
 
     if (!stripe || !elements) {
+      setErrorMessage('Stripe has not loaded yet. Please wait...');
       return;
     }
 
@@ -50,8 +51,18 @@ function PaymentFormContent({
     setErrorMessage(null);
 
     try {
-      // Confirm payment - the client secret is already set in the Elements provider
-      const { error } = await stripe.confirmPayment({
+      // First, validate and submit the PaymentElement
+      // This ensures the PaymentElement is mounted and validated
+      const { error: submitError } = await elements.submit();
+      if (submitError) {
+        setErrorMessage(submitError.message || 'Validation failed');
+        onPaymentError(submitError.message || 'Validation failed');
+        setIsProcessing(false);
+        return;
+      }
+
+      // Now confirm the payment - the client secret is already set in the Elements provider
+      const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
           return_url: `${window.location.origin}/booking-success`,
@@ -62,8 +73,12 @@ function PaymentFormContent({
       if (error) {
         setErrorMessage(error.message || 'Payment failed');
         onPaymentError(error.message || 'Payment failed');
+      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        onPaymentSuccess({ service, customerInfo, paymentIntent });
       } else {
-        onPaymentSuccess({ service, customerInfo });
+        // Payment might require additional action (like 3D Secure)
+        // The redirect will handle it
+        onPaymentSuccess({ service, customerInfo, paymentIntent });
       }
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Payment failed';
