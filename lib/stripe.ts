@@ -17,6 +17,11 @@ if (!publishableKey.startsWith('pk_test_') && !publishableKey.startsWith('pk_liv
   throw new Error(`Invalid Stripe publishable key format. Expected key starting with pk_test_ or pk_live_, got: ${publishableKey.substring(0, 20)}...`);
 }
 
+// Log in development only (helps with debugging)
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  console.log('Stripe publishable key loaded:', publishableKey.substring(0, 20) + '...');
+}
+
 // Initialize Stripe with your publishable key
 export const stripePromise = loadStripe(publishableKey);
 
