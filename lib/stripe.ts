@@ -1,10 +1,20 @@
 import { loadStripe } from '@stripe/stripe-js';
 
 // Get publishable key from environment
-const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+let publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+
+// Remove any surrounding quotes that might have been accidentally included
+if (publishableKey) {
+  publishableKey = publishableKey.trim().replace(/^["']|["']$/g, '');
+}
 
 if (!publishableKey) {
   throw new Error('Missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY environment variable');
+}
+
+// Validate key format
+if (!publishableKey.startsWith('pk_test_') && !publishableKey.startsWith('pk_live_')) {
+  throw new Error(`Invalid Stripe publishable key format. Expected key starting with pk_test_ or pk_live_, got: ${publishableKey.substring(0, 20)}...`);
 }
 
 // Initialize Stripe with your publishable key

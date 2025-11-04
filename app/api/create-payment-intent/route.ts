@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-const secretKey = process.env.STRIPE_SECRET_KEY;
+let secretKey = process.env.STRIPE_SECRET_KEY;
+
+// Remove any surrounding quotes that might have been accidentally included
+if (secretKey) {
+  secretKey = secretKey.trim().replace(/^["']|["']$/g, '');
+}
+
 if (!secretKey) {
   throw new Error('Missing STRIPE_SECRET_KEY environment variable');
+}
+
+// Validate key format
+if (!secretKey.startsWith('sk_test_') && !secretKey.startsWith('sk_live_')) {
+  throw new Error(`Invalid Stripe secret key format. Expected key starting with sk_test_ or sk_live_, got: ${secretKey.substring(0, 20)}...`);
 }
 
 const stripe = new Stripe(secretKey, {
