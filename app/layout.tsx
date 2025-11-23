@@ -20,7 +20,6 @@ export const metadata: Metadata = {
     title: 'The Gilded Shear | Master Barber Craftsmanship',
     description: 'Experience the art of precision barbering.',
   },
-  manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
