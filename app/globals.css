@@ -6,8 +6,8 @@
 /* Base styles with proper contrast */
 body {
   font-family: 'Montserrat', sans-serif;
-  background-color: #f6f7f8;
-  color: #2c3e50;
+  background-color: #0A192F;
+  color: #e2e8f0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -15,7 +15,7 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Playfair Display', serif;
   font-weight: 700;
-  color: #0c1f3c;
+  color: #ffffff;
 }
 
 /* Smooth scrolling for anchor links */
@@ -29,7 +29,7 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f6f7f8;
+  background: #0A192F;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -39,16 +39,6 @@ html {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #a68a5a;
-}
-
-/* Dark mode support */
-.dark body {
-  background-color: #111721;
-  color: #f6f7f8;
-}
-
-.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
-  color: #f6f7f8;
 }
 
 
