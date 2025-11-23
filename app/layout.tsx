@@ -14,11 +14,10 @@ export const metadata: Metadata = {
     description: 'Experience the art of precision barbering.',
     siteName: 'The Gilded Shear',
   },
-  twitter: {
-    card: 'summary_large_image',
     title: 'The Gilded Shear | Master Barber Craftsmanship',
     description: 'Experience the art of precision barbering.',
   },
+  manifest: '/manifest.json',
 };
 
 export const viewport = {

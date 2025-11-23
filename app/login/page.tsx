@@ -11,8 +11,20 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
-      router.push('/admin');
+      const result = await signInWithPopup(auth, googleProvider);
+      const email = result.user.email;
+      
+      // Check if user is admin
+      // We need to import ADMIN_EMAILS dynamically or from the lib
+      // Re-importing here to ensure we get the latest value
+      const { ADMIN_EMAILS } = await import('@/lib/firebase');
+      
+      if (email && ADMIN_EMAILS.includes(email)) {
+        router.push('/admin');
+      } else {
+        await auth.signOut();
+        setError('Access denied. You are not an authorized admin.');
+      }
     } catch (err) {
       console.error('Login failed:', err);
       setError('Failed to log in. Please try again.');

@@ -16,11 +16,18 @@ export default function AdminPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
       if (!currentUser) {
         router.push('/login');
       } else {
-        setUser(currentUser);
+        // Check if user is admin
+        const { ADMIN_EMAILS } = await import('@/lib/firebase');
+        if (currentUser.email && ADMIN_EMAILS.includes(currentUser.email)) {
+          setUser(currentUser);
+        } else {
+          await signOut(auth);
+          router.push('/login');
+        }
       }
       setLoading(false);
     });
