@@ -187,7 +187,7 @@ export default function Calendar({ selectedDate, onDateSelect, selectedTime, onT
           </h4>
           
           {availableSlots.length > 0 ? (
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
               {availableSlots.map((time) => (
                 <button
                   key={time}
