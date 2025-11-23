@@ -90,15 +90,15 @@ function PaymentFormContent({
   };
 
   return (
-    <div className="bg-[#0A192F]/50 p-6 rounded-xl border border-[#c8a46e]/30 shadow-lg max-w-md mx-auto backdrop-blur-sm">
-      <h3 className="text-xl font-display font-bold mb-4 text-white">
+    <div className="bg-white p-6 rounded-xl border-2 border-gray-200 shadow-lg max-w-md mx-auto">
+      <h3 className="text-xl font-display font-bold mb-4 text-gray-900">
         Complete Your Booking
       </h3>
       
       {/* Booking Summary */}
-      <div className="mb-6 p-4 bg-[#0A192F] rounded-lg border border-[#c8a46e]/20">
-        <h4 className="font-bold text-[#c8a46e] mb-2">Booking Details</h4>
-        <div className="text-sm text-gray-300 space-y-1">
+      <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+        <h4 className="font-bold text-gray-900 mb-2">Booking Details</h4>
+        <div className="text-sm text-gray-600 space-y-1">
           <p><strong>Service:</strong> {selectedService}</p>
           <p><strong>Date:</strong> {new Date(selectedDate).toLocaleDateString('en-US', { 
             weekday: 'long', 
@@ -128,17 +128,17 @@ function PaymentFormContent({
         <button
           type="submit"
           disabled={!stripe || !elements || isProcessing}
-          className={`w-full py-3 px-4 rounded-lg font-bold text-white transition-all duration-300 shadow-lg ${
+          className={`w-full py-3 px-4 rounded-lg font-bold text-white transition-colors ${
             !stripe || !elements || isProcessing
-              ? 'bg-gray-700 cursor-not-allowed text-gray-400'
-              : 'bg-gradient-to-r from-[#c8a46e] to-[#a68a5a] hover:shadow-[0_0_20px_rgba(200,164,110,0.4)] hover:-translate-y-0.5'
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-yellow-600 hover:bg-yellow-700'
           }`}
         >
           {isProcessing ? 'Processing...' : `Pay $${(service.price / 100).toFixed(2)}`}
         </button>
       </form>
 
-      <p className="text-xs text-gray-400 mt-4 text-center">
+      <p className="text-xs text-gray-500 mt-4 text-center">
         Your payment is secure and encrypted. We use Stripe for payment processing.
       </p>
     </div>
@@ -206,9 +206,9 @@ export default function PaymentForm(props: PaymentFormProps) {
   // Show loading state while creating payment intent
   if (isLoading) {
     return (
-      <div className="bg-[#0A192F]/50 p-6 rounded-xl border border-[#c8a46e]/30 shadow-lg max-w-md mx-auto backdrop-blur-sm">
+      <div className="bg-white p-6 rounded-xl border-2 border-gray-200 shadow-lg max-w-md mx-auto">
         <div className="flex items-center justify-center h-64">
-          <div className="text-[#c8a46e]">Initializing payment...</div>
+          <div className="text-gray-500">Initializing payment...</div>
         </div>
       </div>
     );

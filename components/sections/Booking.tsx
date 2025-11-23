@@ -96,16 +96,14 @@ export default function Booking() {
                     <button
                       key={service.name}
                       onClick={() => handleServiceSelect(service.name)}
-                      className={`w-full text-left p-4 rounded-lg border transition-all duration-300 group relative overflow-hidden ${
+                      className={`w-full text-left p-4 rounded-lg border-2 transition-all duration-200 ${
                         selectedService === service.name
-                          ? 'border-[#c8a46e] bg-[#0A192F] shadow-[0_0_15px_rgba(200,164,110,0.15)]'
-                          : 'border-[#c8a46e]/30 bg-[#0A192F]/50 hover:border-[#c8a46e] hover:bg-[#0A192F]/80 hover:-translate-y-1 hover:shadow-lg'
+                          ? 'border-yellow-500 bg-yellow-50 shadow-md'
+                          : 'border-gray-200 bg-white hover:border-yellow-300 hover:bg-yellow-50'
                       }`}
                     >
-                      <p className={`font-bold transition-colors ${
-                        selectedService === service.name ? 'text-[#c8a46e]' : 'text-gray-200 group-hover:text-white'
-                      }`}>{service.name}</p>
-                      <p className="text-sm text-gray-400 mt-1">
+                      <p className="font-bold text-gray-900">{service.name}</p>
+                      <p className="text-sm text-gray-600">
                         {formatDuration(service.duration)} - {formatPrice(service.price)}
                       </p>
                     </button>
@@ -139,10 +137,10 @@ export default function Booking() {
               <button 
                 onClick={handleConfirmBooking}
                 disabled={!isBookingReady()}
-                className={`px-12 py-4 rounded-lg font-bold text-lg transition-all duration-300 shadow-lg transform ${
+                className={`px-12 py-4 rounded-lg font-bold text-lg transition-colors shadow-lg ${
                   isBookingReady()
-                    ? 'bg-gradient-to-r from-[#c8a46e] to-[#a68a5a] text-white hover:shadow-[0_0_25px_rgba(200,164,110,0.5)] hover:-translate-y-1 hover:scale-105 cursor-pointer active:scale-95'
-                    : 'bg-gray-700 text-gray-400 cursor-not-allowed border border-gray-600'
+                    ? 'bg-yellow-600 text-white hover:bg-yellow-700 cursor-pointer'
+                    : 'bg-gray-400 text-gray-200 cursor-not-allowed'
                 }`}
               >
                 {isBookingReady() ? 'Proceed to Payment' : 'Complete All Fields'}
