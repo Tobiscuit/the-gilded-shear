@@ -9,7 +9,7 @@ export default function LocationHours() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           {/* Contact Info */}
           <div className="text-center md:text-left">
-            <h3 className="text-2xl font-display font-bold mb-6" style={{color: '#C69F43'}}>
+            <h3 className="text-2xl font-display font-bold mb-6" style={{color: '#9A7B34'}}>
               Contact
             </h3>
             <div className="space-y-4">
@@ -30,7 +30,7 @@ export default function LocationHours() {
           
           {/* Hours */}
           <div className="text-center md:text-left">
-            <h3 className="text-2xl font-display font-bold mb-6" style={{color: '#C69F43'}}>
+            <h3 className="text-2xl font-display font-bold mb-6" style={{color: '#9A7B34'}}>
               Available Hours
             </h3>
             <div className="space-y-2">

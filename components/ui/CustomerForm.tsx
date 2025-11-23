@@ -63,15 +63,15 @@ export default function CustomerForm({ customerInfo, onInfoChange }: CustomerFor
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl border-2 border-gray-200 shadow-lg">
-      <h3 className="text-xl font-display font-bold mb-4 text-gray-900">
+    <div className="bg-[#0A192F]/50 p-6 rounded-xl border border-[#c8a46e]/30 shadow-lg backdrop-blur-sm">
+      <h3 className="text-xl font-display font-bold mb-4 text-white">
         Your Information
       </h3>
       
       <div className="space-y-4">
         {/* Name Field */}
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
             Full Name *
           </label>
           <input
@@ -79,8 +79,8 @@ export default function CustomerForm({ customerInfo, onInfoChange }: CustomerFor
             id="name"
             value={customerInfo.name}
             onChange={(e) => handleInputChange('name', e.target.value)}
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 ${
-              errors.name ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8a46e] bg-[#0A192F] text-white placeholder-gray-500 ${
+              errors.name ? 'border-red-500' : 'border-[#c8a46e]/30'
             }`}
             placeholder="Enter your full name"
           />
@@ -91,7 +91,7 @@ export default function CustomerForm({ customerInfo, onInfoChange }: CustomerFor
 
         {/* Email Field */}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
             Email Address *
           </label>
           <input
@@ -99,8 +99,8 @@ export default function CustomerForm({ customerInfo, onInfoChange }: CustomerFor
             id="email"
             value={customerInfo.email}
             onChange={(e) => handleInputChange('email', e.target.value)}
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 ${
-              errors.email ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8a46e] bg-[#0A192F] text-white placeholder-gray-500 ${
+              errors.email ? 'border-red-500' : 'border-[#c8a46e]/30'
             }`}
             placeholder="Enter your email address"
           />
@@ -111,7 +111,7 @@ export default function CustomerForm({ customerInfo, onInfoChange }: CustomerFor
 
         {/* Phone Field */}
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-1">
             Phone Number *
           </label>
           <input
@@ -119,8 +119,8 @@ export default function CustomerForm({ customerInfo, onInfoChange }: CustomerFor
             id="phone"
             value={customerInfo.phone}
             onChange={(e) => handleInputChange('phone', e.target.value)}
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 ${
-              errors.phone ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c8a46e] bg-[#0A192F] text-white placeholder-gray-500 ${
+              errors.phone ? 'border-red-500' : 'border-[#c8a46e]/30'
             }`}
             placeholder="Enter your phone number"
           />
@@ -137,7 +137,7 @@ export default function CustomerForm({ customerInfo, onInfoChange }: CustomerFor
             ✓ All information looks good!
           </p>
         ) : (
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-400 text-sm">
             Please fill in all required fields correctly.
           </p>
         )}

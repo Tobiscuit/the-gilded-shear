@@ -112,33 +112,33 @@ export default function Calendar({ selectedDate, onDateSelect, selectedTime, onT
   // Show loading state until client-side hydration is complete
   if (!isClient || !currentMonth) {
     return (
-      <div className="bg-white p-6 rounded-xl border-2 border-gray-200 w-full max-w-md shadow-lg">
+      <div className="bg-[#0A192F]/50 p-6 rounded-xl border border-[#c8a46e]/30 w-full max-w-md shadow-lg backdrop-blur-sm">
         <div className="flex items-center justify-center h-64">
-          <div className="text-gray-500">Loading calendar...</div>
+          <div className="text-[#c8a46e]">Loading calendar...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white p-6 rounded-xl border-2 border-gray-200 w-full max-w-md shadow-lg">
+    <div className="bg-[#0A192F]/50 p-6 rounded-xl border border-[#c8a46e]/30 w-full max-w-md shadow-lg backdrop-blur-sm">
       <div className="flex min-w-72 flex-1 flex-col gap-0.5">
         {/* Calendar Header */}
         <div className="flex items-center p-1 justify-between mb-4">
           <button 
             onClick={goToPreviousMonth}
-            className="text-gray-600 hover:bg-gray-100 rounded-full p-2"
+            className="text-gray-400 hover:text-white hover:bg-white/10 rounded-full p-2 transition-colors"
           >
             <div className="flex size-10 items-center justify-center">
               <span className="material-symbols-outlined text-lg">chevron_left</span>
             </div>
           </button>
-          <p className="text-gray-900 text-lg font-bold flex-1 text-center font-display">
+          <p className="text-white text-lg font-bold flex-1 text-center font-display">
             {formatMonthYear(currentMonth)}
           </p>
           <button 
             onClick={goToNextMonth}
-            className="text-gray-600 hover:bg-gray-100 rounded-full p-2"
+            className="text-gray-400 hover:text-white hover:bg-white/10 rounded-full p-2 transition-colors"
           >
             <div className="flex size-10 items-center justify-center">
               <span className="material-symbols-outlined text-lg">chevron_right</span>
@@ -150,7 +150,7 @@ export default function Calendar({ selectedDate, onDateSelect, selectedTime, onT
         <div className="grid grid-cols-7">
           {/* Day headers */}
           {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => (
-            <p key={`day-${index}`} className="text-gray-500 text-xs font-bold tracking-wider flex h-10 w-full items-center justify-center pb-0.5">
+            <p key={`day-${index}`} className="text-[#c8a46e] text-xs font-bold tracking-wider flex h-10 w-full items-center justify-center pb-0.5">
               {day}
             </p>
           ))}
@@ -161,17 +161,17 @@ export default function Calendar({ selectedDate, onDateSelect, selectedTime, onT
               key={index}
               onClick={() => handleDateClick(date, isAvailable)}
               disabled={!isAvailable}
-              className={`h-10 w-full text-gray-900 text-sm font-medium ${
+              className={`h-10 w-full text-sm font-medium transition-all duration-200 ${
                 !isAvailable ? 'cursor-not-allowed' : 'cursor-pointer'
               }`}
             >
               <div className={`flex size-full items-center justify-center rounded-full ${
                 !isAvailable 
-                  ? 'text-gray-300'
+                  ? 'text-gray-600'
                   : selectedDate === date
-                  ? 'bg-yellow-500 text-white font-bold'
-                  : 'hover:bg-yellow-100'
-              } ${!isCurrentMonth ? 'text-gray-400' : ''}`}>
+                  ? 'bg-[#c8a46e] text-white font-bold shadow-[0_0_10px_rgba(200,164,110,0.4)]'
+                  : 'text-gray-300 hover:bg-[#c8a46e]/20 hover:text-[#c8a46e]'
+              } ${!isCurrentMonth ? 'opacity-30' : ''}`}>
                 {day}
               </div>
             </button>
@@ -181,8 +181,8 @@ export default function Calendar({ selectedDate, onDateSelect, selectedTime, onT
 
       {/* Selected Date and Time Slots */}
       {selectedDate && (
-        <div className="mt-6 pt-6 border-t border-gray-200">
-          <h4 className="text-lg font-display font-bold text-gray-900 mb-3">
+        <div className="mt-6 pt-6 border-t border-[#c8a46e]/20">
+          <h4 className="text-lg font-display font-bold text-white mb-3">
             {formatDate(selectedDate)}
           </h4>
           
@@ -192,10 +192,10 @@ export default function Calendar({ selectedDate, onDateSelect, selectedTime, onT
                 <button
                   key={time}
                   onClick={() => handleTimeClick(time)}
-                  className={`p-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`p-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     selectedTime === time
-                      ? 'bg-yellow-500 text-white'
-                      : 'bg-gray-100 text-gray-900 hover:bg-yellow-100'
+                      ? 'bg-[#c8a46e] text-white shadow-[0_0_10px_rgba(200,164,110,0.4)]'
+                      : 'bg-[#0A192F] border border-[#c8a46e]/30 text-gray-300 hover:border-[#c8a46e] hover:text-[#c8a46e]'
                   }`}
                 >
                   {time}
@@ -203,7 +203,7 @@ export default function Calendar({ selectedDate, onDateSelect, selectedTime, onT
               ))}
             </div>
           ) : (
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-400 text-sm">
               No available times for this date.
             </p>
           )}
