@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import PwaRegister from '@/components/PwaRegister';
 
 export const metadata: Metadata = {
   title: 'The Gilded Shear | Master Barber Craftsmanship',
@@ -53,7 +54,10 @@ export default function RootLayout({
         />
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
       </head>
-      <body>{children}</body>
+      <body>
+        <PwaRegister />
+        {children}
+      </body>
     </html>
   );
 }
