@@ -19,7 +19,9 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firebase services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-export const messaging = getMessaging(app);
+
+// Messaging is only supported in the browser
+export const messaging = typeof window !== 'undefined' ? getMessaging(app) : null;
 
 // Google Auth Provider
 export const googleProvider = new GoogleAuthProvider();

@@ -6,6 +6,8 @@ import Calendar from '@/components/ui/Calendar';
 import CustomerForm from '@/components/ui/CustomerForm';
 import PaymentForm from '@/components/ui/PaymentForm';
 import StripeProvider from '@/components/providers/StripeProvider';
+import { collection, addDoc, Timestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export default function Booking() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -64,10 +66,32 @@ export default function Booking() {
     }
   };
 
-  const handlePaymentSuccess = (paymentIntent: any) => {
-    setPaymentStatus('success');
-    console.log('Payment successful:', paymentIntent);
-    // TODO: Save booking to Firebase and send notifications
+  const handlePaymentSuccess = async (paymentIntent: any) => {
+    try {
+      // Save booking to Firebase
+      const bookingData = {
+        clientName: customerInfo.name,
+        clientEmail: customerInfo.email,
+        clientPhone: customerInfo.phone,
+        serviceName: selectedService,
+        appointmentDate: Timestamp.fromDate(new Date(`${selectedDate}T${selectedTime}`)),
+        duration: SERVICES.find(s => s.name === selectedService)?.duration || 30,
+        status: 'confirmed',
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+        paymentIntentId: paymentIntent.id,
+        amount: paymentIntent.amount,
+      };
+
+      await addDoc(collection(db, 'bookings'), bookingData);
+      
+      setPaymentStatus('success');
+      console.log('Payment successful and booking saved:', paymentIntent);
+    } catch (error) {
+      console.error('Error saving booking:', error);
+      // Still show success for payment, but maybe log this error critically
+      setPaymentStatus('success'); 
+    }
   };
 
   const handlePaymentError = (error: string) => {

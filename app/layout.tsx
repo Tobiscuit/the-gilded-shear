@@ -19,12 +19,13 @@ export const metadata: Metadata = {
     title: 'The Gilded Shear | Master Barber Craftsmanship',
     description: 'Experience the art of precision barbering.',
   },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 5,
-  },
+};
+
+export const viewport = {
   themeColor: '#0A192F',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({

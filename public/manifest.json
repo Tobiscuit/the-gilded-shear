@@ -1,0 +1,21 @@
+{
+  "name": "The Gilded Shear",
+  "short_name": "Gilded Shear",
+  "description": "Mobile Barber Services by Edgar Nava",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A192F",
+  "theme_color": "#0A192F",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
