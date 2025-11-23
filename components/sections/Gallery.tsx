@@ -35,46 +35,46 @@ export default function Gallery() {
   ];
 
   return (
-    <section id="gallery" className="py-24" style={{backgroundColor: '#FFF8E7'}}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-4xl md:text-5xl font-display font-bold text-center text-gray-900 mb-12">
+    <section id="gallery" className="py-24 bg-[#0A192F] relative overflow-hidden">
+      {/* Background Texture Overlay */}
+      <div className="absolute inset-0 bg-premium-texture opacity-30 pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <h2 className="text-4xl md:text-5xl font-display font-bold text-center text-white mb-12">
           Our Work
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map((item) => (
+          {galleryImages.map((image, index) => (
             <div 
-              key={item}
-              className="relative group bg-white rounded-lg aspect-square overflow-hidden shadow-lg border-2 border-gray-200"
+              key={index}
+              className="relative group rounded-xl aspect-square overflow-hidden shadow-lg border border-[#c8a46e]/20 hover:border-[#c8a46e] transition-all duration-300"
             >
-              {/* Barber-themed CSS pattern as the main background */}
-              <div 
-                className="absolute inset-0 opacity-20"
-                style={{
-                  backgroundImage: `
-                    conic-gradient(from 0deg at 50% 50%, #c8a46e 0deg 60deg, transparent 60deg 120deg, #c8a46e 120deg 180deg, transparent 180deg 240deg, #c8a46e 240deg 300deg, transparent 300deg 360deg),
-                    radial-gradient(circle at 20% 20%, #c8a46e 3px, transparent 3px),
-                    radial-gradient(circle at 80% 80%, #c8a46e 3px, transparent 3px),
-                    linear-gradient(90deg, transparent 48%, #c8a46e 48%, #c8a46e 52%, transparent 52%)
-                  `,
-                  backgroundSize: '40px 40px, 20px 20px, 20px 20px, 100% 4px',
-                  backgroundPosition: '0 0, 0 0, 0 0, 0 50%'
-                }}
+              {/* Premium Texture Placeholder (visible while loading or if image fails) */}
+              <div className="absolute inset-0 bg-premium-texture flex items-center justify-center">
+                 <span className="text-[#c8a46e]/10 text-6xl font-display font-bold rotate-12 select-none">GS</span>
+              </div>
+
+              {/* Actual Image */}
+              <img 
+                src={image.src} 
+                alt={image.alt}
+                className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700"
               />
               
-              {/* Overlay with barber icon */}
-              <div className="absolute inset-0 bg-gray-100 bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center">
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center">
-                  <div className="text-6xl mb-2">✂️</div>
-                  <p className="text-gray-800 text-lg font-bold">
-                    Coming Soon
-                  </p>
-                </div>
+              {/* Overlay with Title */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0A192F] via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
+              
+              <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                <h3 className="text-xl font-display font-bold text-white mb-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+                  {image.title}
+                </h3>
+                <div className="h-1 w-12 bg-[#c8a46e] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-200" />
               </div>
             </div>
           ))}
         </div>
         <div className="flex justify-center mt-12">
-          <button className="bg-gray-900 text-white px-8 py-3 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-300 shadow-lg">
+          <button className="px-8 py-3 bg-transparent border border-[#c8a46e] text-[#c8a46e] font-bold rounded-lg hover:bg-[#c8a46e] hover:text-white transition-all duration-300 shadow-[0_0_15px_rgba(200,164,110,0.2)] hover:shadow-[0_0_25px_rgba(200,164,110,0.4)]">
             Load More
           </button>
         </div>

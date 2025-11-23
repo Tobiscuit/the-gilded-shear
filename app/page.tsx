@@ -6,7 +6,7 @@ import LocationHours from '@/components/sections/LocationHours';
 
 export default function Home() {
   return (
-    <main className="min-h-screen" style={{backgroundColor: '#FFF8E7'}}>
+    <main className="min-h-screen bg-[#0A192F]">
       <Hero />
       <Services />
       <Gallery />
