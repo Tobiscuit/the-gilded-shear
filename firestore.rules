@@ -2,30 +2,46 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Bookings collection - authenticated users can read/write their own bookings
+    
+    // Helper function to check if user is admin
+    // We hardcode the admin email here for server-side security.
+    // This cannot be bypassed by client-side modifications.
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email in ['tobiasramzy@gmail.com'];
+    }
+
+    // Bookings collection
     match /bookings/{bookingId} {
-      allow read, write: if request.auth != null && 
-        (resource == null || request.auth.uid == resource.data.customerId);
-      allow create: if request.auth != null;
+      // Admins can read/write all bookings.
+      // Customers can only read/write their own bookings (checked by clientEmail or created by them).
+      allow read, write: if isAdmin() || (
+        request.auth != null && (
+          resource == null || // Allow creation
+          resource.data.clientEmail == request.auth.token.email // Allow access if email matches
+        )
+      );
     }
     
     // Admin users collection - only admin emails can access
     match /admin/{adminId} {
-      allow read, write: if request.auth != null && 
-        request.auth.token.email in ['tobiasramzy@gmail.com'];
+      allow read, write: if isAdmin();
     }
     
-    // Public services collection - everyone can read
+    // Public services collection
     match /services/{serviceId} {
       allow read: if true;
-      allow write: if request.auth != null && 
-        request.auth.token.email in ['tobiasramzy@gmail.com'];
+      allow write: if isAdmin();
     }
     
-    // Admin notifications - only admins can read/write
+    // Admin notifications
     match /notifications/{notificationId} {
-      allow read, write: if request.auth != null && 
-        request.auth.token.email in ['tobiasramzy@gmail.com'];
+      allow read, write: if isAdmin();
+    }
+    
+    // Barber Profile
+    match /barberProfile/{profileId} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
   }
 }
