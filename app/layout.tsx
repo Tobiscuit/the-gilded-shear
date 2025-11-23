@@ -20,6 +20,14 @@ export const metadata: Metadata = {
     description: 'Experience the art of precision barbering.',
   },
   manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'The Gilded Shear',
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 export const viewport = {

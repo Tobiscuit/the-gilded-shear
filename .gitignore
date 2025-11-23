@@ -98,3 +98,7 @@ desktop.ini
 # These files reveal system architecture to attackers
 docs-private/
 
+
+# MCP Configuration
+mcp.json
+.vscode/mcp.json
