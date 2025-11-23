@@ -33,19 +33,19 @@ export default function Hero() {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex space-x-8">
             <a 
-              className="text-gray-300 hover:text-[#c8a46e] transition-colors font-medium drop-shadow-sm" 
+              className="text-gray-200 hover:text-[#c8a46e] transition-colors font-medium drop-shadow-sm" 
               href="#services"
             >
               Services
             </a>
             <a 
-              className="text-gray-300 hover:text-[#c8a46e] transition-colors font-medium drop-shadow-sm" 
+              className="text-gray-200 hover:text-[#c8a46e] transition-colors font-medium drop-shadow-sm" 
               href="#gallery"
             >
               Gallery
             </a>
             <a 
-              className="text-gray-300 hover:text-[#c8a46e] transition-colors font-medium drop-shadow-sm" 
+              className="text-gray-200 hover:text-[#c8a46e] transition-colors font-medium drop-shadow-sm" 
               href="#booking"
             >
               Contact
@@ -68,21 +68,21 @@ export default function Hero() {
           <div className="lg:hidden absolute top-full left-0 right-0 bg-[#0A192F] border-b border-[#c8a46e]/20 shadow-lg z-50">
             <nav className="flex flex-col space-y-4 p-4">
               <a 
-                className="text-gray-300 hover:text-[#c8a46e] transition-colors font-medium py-2" 
+                className="text-gray-200 hover:text-[#c8a46e] transition-colors font-medium py-2" 
                 href="#services"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Services
               </a>
               <a 
-                className="text-gray-300 hover:text-[#c8a46e] transition-colors font-medium py-2" 
+                className="text-gray-200 hover:text-[#c8a46e] transition-colors font-medium py-2" 
                 href="#gallery"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Gallery
               </a>
               <a 
-                className="text-gray-300 hover:text-[#c8a46e] transition-colors font-medium py-2" 
+                className="text-gray-200 hover:text-[#c8a46e] transition-colors font-medium py-2" 
                 href="#booking"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
@@ -101,7 +101,7 @@ export default function Hero() {
               Mastering the <br/>
               <span className="text-white">Craft of Style</span>
             </h1>
-            <p className="text-gray-300 text-lg md:text-xl mb-10 max-w-lg mx-auto lg:mx-0 font-light leading-relaxed">
+            <p className="text-gray-200 text-lg md:text-xl mb-10 max-w-lg mx-auto lg:mx-0 font-light leading-relaxed">
               Bespoke grooming for the modern gentleman. Experience the finest cuts and shaves in the comfort of your own space.
             </p>
             
@@ -120,7 +120,7 @@ export default function Hero() {
               </a>
             </div>
 
-            <div className="mt-12 flex items-center justify-center lg:justify-start gap-2 text-sm text-gray-400">
+            <div className="mt-12 flex items-center justify-center lg:justify-start gap-2 text-sm text-gray-300">
               <span className="flex text-[#c8a46e]">
                 <span className="material-symbols-outlined text-sm">star</span>
                 <span className="material-symbols-outlined text-sm">star</span>
@@ -149,7 +149,7 @@ export default function Hero() {
             {/* Floating Badge */}
             <div className="absolute -bottom-6 -left-6 bg-[#0A192F] border border-[#c8a46e]/30 p-6 rounded-xl shadow-xl z-20 hidden md:block">
               <p className="text-[#c8a46e] font-display font-bold text-3xl">10+</p>
-              <p className="text-gray-400 text-sm uppercase tracking-wider">Years Experience</p>
+              <p className="text-gray-300 text-sm uppercase tracking-wider">Years Experience</p>
             </div>
           </div>
         </div>

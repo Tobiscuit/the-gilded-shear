@@ -10,7 +10,7 @@ export default function Services() {
         <h2 className="text-4xl md:text-5xl font-display font-bold text-center mb-6 text-white">
           The Services We Offer
         </h2>
-        <p className="text-lg text-center mb-16 max-w-3xl mx-auto text-gray-300 font-light">
+        <p className="text-lg text-center mb-16 max-w-3xl mx-auto text-gray-200 font-light">
           Each service is crafted with the precision and care of a master artisan. We don't just cut hair – we sculpt confidence, one strand at a time.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -26,7 +26,7 @@ export default function Services() {
             <h3 className="text-2xl font-display font-bold text-white mb-3 group-hover:text-[#c8a46e] transition-colors">
               Classic Cut
             </h3>
-            <p className="text-gray-400 text-sm leading-relaxed group-hover:text-gray-300 transition-colors">
+            <p className="text-gray-300 text-sm leading-relaxed group-hover:text-gray-200 transition-colors">
               Timeless craftsmanship meets modern precision. Every cut is executed with the meticulous attention to detail that defines true mastery.
             </p>
           </div>
@@ -43,7 +43,7 @@ export default function Services() {
             <h3 className="text-2xl font-display font-bold text-white mb-3 group-hover:text-[#c8a46e] transition-colors">
               Beard Trim
             </h3>
-            <p className="text-gray-400 text-sm leading-relaxed group-hover:text-gray-300 transition-colors">
+            <p className="text-gray-300 text-sm leading-relaxed group-hover:text-gray-200 transition-colors">
               The art of masculine refinement. Each stroke of the blade reveals the confident gentleman within, transforming your appearance with skilled precision.
             </p>
           </div>
@@ -60,7 +60,7 @@ export default function Services() {
             <h3 className="text-2xl font-display font-bold text-white mb-3 group-hover:text-[#c8a46e] transition-colors">
               Fade
             </h3>
-            <p className="text-gray-400 text-sm leading-relaxed group-hover:text-gray-300 transition-colors">
+            <p className="text-gray-300 text-sm leading-relaxed group-hover:text-gray-200 transition-colors">
               The pinnacle of modern barbering artistry. Seamless transitions and perfect gradients that showcase the skill of a true craftsman at work.
             </p>
           </div>

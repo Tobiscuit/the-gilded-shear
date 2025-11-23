@@ -13,16 +13,16 @@ export default function LocationHours() {
               Contact
             </h3>
             <div className="space-y-4">
-              <p className="text-lg text-gray-300">
+              <p className="text-lg text-gray-200">
                 <strong className="text-white">The Gilded Shear</strong><br />
                 Mobile Barber Services
               </p>
-              <p className="text-lg text-gray-300">
+              <p className="text-lg text-gray-200">
                 <span className="text-[#c8a46e]">📞</span> (555) 123-4567<br />
                 <span className="text-[#c8a46e]">✉️</span> hello@thegildedshear.com<br />
                 <span className="text-[#c8a46e]">📸</span> @thegildedshear
               </p>
-              <p className="text-sm text-gray-500 italic">
+              <p className="text-sm text-gray-400 italic">
                 Location provided upon booking confirmation
               </p>
             </div>
@@ -35,15 +35,15 @@ export default function LocationHours() {
             </h3>
             <div className="space-y-4">
               <div className="flex justify-between border-b border-[#c8a46e]/10 pb-2">
-                <span className="text-gray-300">Monday - Friday</span>
+                <span className="text-gray-200">Monday - Friday</span>
                 <span className="text-white font-medium">4:00 PM - 8:00 PM</span>
               </div>
               <div className="flex justify-between border-b border-[#c8a46e]/10 pb-2">
-                <span className="text-gray-300">Saturday</span>
+                <span className="text-gray-200">Saturday</span>
                 <span className="text-white font-medium">10:00 AM - 6:00 PM</span>
               </div>
               <div className="flex justify-between border-b border-[#c8a46e]/10 pb-2">
-                <span className="text-gray-300">Sunday</span>
+                <span className="text-gray-200">Sunday</span>
                 <span className="text-[#c8a46e] font-medium">Closed</span>
               </div>
             </div>
@@ -51,7 +51,7 @@ export default function LocationHours() {
         </div>
         
         {/* Copyright */}
-        <div className="mt-20 pt-8 border-t border-[#c8a46e]/10 text-center text-gray-500 text-sm">
+        <div className="mt-20 pt-8 border-t border-[#c8a46e]/10 text-center text-gray-400 text-sm">
           <p>&copy; {new Date().getFullYear()} The Gilded Shear. All rights reserved.</p>
         </div>
       </div>
