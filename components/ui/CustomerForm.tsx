@@ -64,9 +64,6 @@ export default function CustomerForm({ customerInfo, onInfoChange }: CustomerFor
 
   return (
     <div className="bg-white p-6 rounded-xl border-2 border-gray-200 shadow-lg">
-      <h3 className="text-xl font-display font-bold mb-4 text-gray-900">
-        Your Information
-      </h3>
       
       <div className="space-y-4">
         {/* Name Field */}
