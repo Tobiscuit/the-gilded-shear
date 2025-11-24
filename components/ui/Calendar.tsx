@@ -58,15 +58,27 @@ export default function Calendar({ selectedDate, onDateSelect, selectedTime, onT
 
   // Update available time slots when date changes
   useEffect(() => {
-    if (selectedDate) {
-      const slots = generateTimeSlots(selectedDate);
-      setAvailableSlots(slots);
-      
-      // Reset selected time if it's not available for new date
-      if (selectedTime && !slots.includes(selectedTime)) {
-        onTimeSelect('');
+    const fetchAvailability = async () => {
+      if (selectedDate) {
+        // Generate all possible slots
+        const allSlots = generateTimeSlots(selectedDate);
+        
+        // Fetch booked slots from server
+        const { getAvailability } = await import('@/app/actions/get-availability');
+        const bookedSlots = await getAvailability(selectedDate);
+        
+        // Filter out booked slots
+        const available = allSlots.filter(slot => !bookedSlots.includes(slot));
+        setAvailableSlots(available);
+        
+        // Reset selected time if it's not available for new date
+        if (selectedTime && !available.includes(selectedTime)) {
+          onTimeSelect('');
+        }
       }
-    }
+    };
+
+    fetchAvailability();
   }, [selectedDate, selectedTime, onTimeSelect]);
 
   const handleDateClick = (date: string, isAvailable: boolean) => {

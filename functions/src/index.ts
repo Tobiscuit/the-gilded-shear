@@ -1,24 +1,27 @@
-import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
-import Stripe from 'stripe';
+import { onRequest, onCall, HttpsError } from "firebase-functions/v2/https";
+import { onDocumentCreated } from "firebase-functions/v2/firestore";
+import { defineSecret } from "firebase-functions/params";
+import * as admin from "firebase-admin";
+import Stripe from "stripe";
 
 // Initialize Firebase Admin
 admin.initializeApp();
 
-// Initialize Stripe
-// Initialize Stripe
-const stripeConfig = functions.config().stripe;
-const stripeSecret = stripeConfig?.secret_key || 'placeholder-for-build';
-const stripe = new Stripe(stripeSecret, {
-  apiVersion: '2025-09-30.clover',
-});
+// Define Secrets
+const stripeSecretKey = defineSecret("STRIPE_SECRET_KEY");
+const stripeWebhookSecret = defineSecret("STRIPE_WEBHOOK_SECRET");
 
-// Cloud Function to handle new booking notifications
-export const onBookingCreated = functions.firestore
-  .document('bookings/{bookingId}')
-  .onCreate(async (snap, context) => {
-    const booking = snap.data();
-    const bookingId = context.params.bookingId;
+// Initialize Stripe (Lazy initialization inside functions to access secrets)
+const getStripe = () => {
+  return new Stripe(stripeSecretKey.value(), {
+    apiVersion: '2025-11-17.clover',
+  });
+};
+
+// Cloud Function to handle new booking notifications (Gen 2)
+export const onBookingCreated = onDocumentCreated("bookings/{bookingId}", async (event) => {
+    const booking = event.data?.data();
+    const bookingId = event.params.bookingId;
 
     if (!booking) {
       console.log('No booking data found');
@@ -75,12 +78,13 @@ export const onBookingCreated = functions.firestore
     } catch (error) {
       console.error('Error sending notification:', error);
     }
-  });
+});
 
-// Cloud Function to handle Stripe webhooks
-export const stripeWebhook = functions.https.onRequest(async (req, res) => {
+// Cloud Function to handle Stripe webhooks (Gen 2)
+export const stripeWebhook = onRequest({ secrets: [stripeWebhookSecret, stripeSecretKey] }, async (req, res) => {
   const sig = req.headers['stripe-signature'];
-  const endpointSecret = functions.config().stripe.webhook_secret;
+  const endpointSecret = stripeWebhookSecret.value();
+  const stripe = getStripe();
 
   if (!sig) {
     console.log('No stripe-signature header');
@@ -91,7 +95,11 @@ export const stripeWebhook = functions.https.onRequest(async (req, res) => {
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+    // In v2, rawBody is reliably available
+    const rawBody = req.rawBody;
+    if (!rawBody) throw new Error('Missing rawBody');
+    
+    event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
   } catch (err) {
     console.log(`Webhook signature verification failed.`, err);
     res.status(400).send(`Webhook Error: ${err}`);
@@ -103,9 +111,27 @@ export const stripeWebhook = functions.https.onRequest(async (req, res) => {
     case 'payment_intent.succeeded':
       const paymentIntent = event.data.object as Stripe.PaymentIntent;
       
-      // Save booking to Firestore
+      // Extract and map metadata
+      const { 
+        service, 
+        customerName, 
+        customerEmail, 
+        customerPhone, 
+        bookingDate, 
+        bookingTime 
+      } = paymentIntent.metadata;
+
+      // Create Date object from date and time strings
+      // bookingDate: "YYYY-MM-DD", bookingTime: "HH:MM"
+      const appointmentDate = new Date(`${bookingDate}T${bookingTime}:00`);
+
+      // Save booking to Firestore with correct schema
       await admin.firestore().collection('bookings').add({
-        ...paymentIntent.metadata,
+        clientName: customerName,
+        clientEmail: customerEmail,
+        clientPhone: customerPhone,
+        serviceName: service,
+        appointmentDate: admin.firestore.Timestamp.fromDate(appointmentDate),
         status: 'confirmed',
         paymentIntentId: paymentIntent.id,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -128,16 +154,16 @@ export const stripeWebhook = functions.https.onRequest(async (req, res) => {
   res.json({received: true});
 });
 
-// Cloud Function to get booking statistics (admin only)
-export const getBookingStats = functions.https.onCall(async (data, context) => {
+// Cloud Function to get booking statistics (Gen 2)
+export const getBookingStats = onCall(async (request) => {
   // Verify admin authentication
-  if (!context.auth || !context.auth.token.email) {
-    throw new functions.https.HttpsError('unauthenticated', 'Must be authenticated');
+  if (!request.auth || !request.auth.token.email) {
+    throw new HttpsError('unauthenticated', 'Must be authenticated');
   }
 
   const adminEmails = ['cousin@gmail.com', 'your-email@gmail.com'];
-  if (!adminEmails.includes(context.auth.token.email)) {
-    throw new functions.https.HttpsError('permission-denied', 'Admin access required');
+  if (!adminEmails.includes(request.auth.token.email)) {
+    throw new HttpsError('permission-denied', 'Admin access required');
   }
 
   try {
@@ -170,6 +196,6 @@ export const getBookingStats = functions.https.onCall(async (data, context) => {
     return stats;
   } catch (error) {
     console.error('Error getting booking stats:', error);
-    throw new functions.https.HttpsError('internal', 'Failed to get booking stats');
+    throw new HttpsError('internal', 'Failed to get booking stats');
   }
 });
