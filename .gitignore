@@ -30,7 +30,7 @@ yarn-error.log*
 # env files - NEVER commit secrets!
 .env
 .env*.local
-.env.local
+#.env.local
 .env.development.local
 .env.test.local
 .env.production.local
@@ -96,9 +96,11 @@ desktop.ini
 
 # Private documentation - ACTIVE (prevents information disclosure)
 # These files reveal system architecture to attackers
-docs-private/
+
 
 
 # MCP Configuration
 mcp.json
-.vscode/mcp.json
+
+
+docs-private/*

@@ -52,10 +52,10 @@ export default function LocationHours() {
         
         {/* Copyright */}
         <div className="mt-20 pt-8 border-t border-[#c8a46e]/10 text-center text-gray-400 text-sm">
-          <p>
-            &copy; {new Date().getFullYear()} The Gilded Shear. All rights reserved. 
-            <a href="/login" className="ml-4 opacity-20 hover:opacity-100 transition-opacity">Admin</a>
-          </p>
+          <p>&copy; {new Date().getFullYear()} The Gilded Shear. All rights reserved.</p>
+          <div className="mt-2 flex justify-center">
+            <a href="/login" className="p-4 opacity-50 hover:opacity-100 transition-opacity text-xs uppercase tracking-widest">Admin Access</a>
+          </div>
         </div>
       </div>
     </section>

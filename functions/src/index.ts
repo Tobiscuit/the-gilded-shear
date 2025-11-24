@@ -6,8 +6,11 @@ import Stripe from 'stripe';
 admin.initializeApp();
 
 // Initialize Stripe
-const stripe = new Stripe(functions.config().stripe.secret_key, {
-  apiVersion: '2025-10-29.clover',
+// Initialize Stripe
+const stripeConfig = functions.config().stripe;
+const stripeSecret = stripeConfig?.secret_key || 'placeholder-for-build';
+const stripe = new Stripe(stripeSecret, {
+  apiVersion: '2025-09-30.clover',
 });
 
 // Cloud Function to handle new booking notifications
@@ -17,39 +20,58 @@ export const onBookingCreated = functions.firestore
     const booking = snap.data();
     const bookingId = context.params.bookingId;
 
+    if (!booking) {
+      console.log('No booking data found');
+      return;
+    }
+
     try {
-      // Get admin users
-      const adminSnapshot = await admin.firestore()
-        .collection('admin')
-        .where('notificationsEnabled', '==', true)
+      // Get barber profile for FCM tokens
+      const barberProfileSnap = await admin.firestore()
+        .doc('barberProfile/main')
         .get();
 
-      // Send push notifications to all admins
-      const notifications = adminSnapshot.docs.map(doc => {
-        const adminData = doc.data();
-        if (adminData.deviceToken) {
-          return admin.messaging().send({
-            token: adminData.deviceToken,
-            notification: {
-              title: 'New Booking! 🎉',
-              body: `${booking.customerName} booked ${booking.serviceName} for ${booking.date} at ${booking.time}`,
-            },
-            data: {
-              type: 'new_booking',
-              bookingId: bookingId,
-              serviceName: booking.serviceName,
-              customerName: booking.customerName,
-            },
-          });
-        }
-        return null;
-      }).filter(Boolean);
+      if (!barberProfileSnap.exists) {
+        console.log('No barber profile found');
+        return;
+      }
 
-      await Promise.all(notifications);
+      const barberData = barberProfileSnap.data();
+      const tokens = (barberData?.fcmTokens || []) as string[];
 
-      // Log the notification
-      console.log(`Notification sent for booking ${bookingId}`);
+      if (tokens.length === 0) {
+        console.log('No FCM tokens found for barber');
+        return;
+      }
+
+      // Format date safely
+      let dateStr = 'Unknown Date';
+      let timeStr = 'Unknown Time';
       
+      if (booking.appointmentDate && typeof booking.appointmentDate.toDate === 'function') {
+        const dateObj = booking.appointmentDate.toDate();
+        dateStr = dateObj.toLocaleDateString();
+        timeStr = dateObj.toLocaleTimeString();
+      }
+
+      // Send multicast message to all tokens
+      const message = {
+        tokens: tokens,
+        notification: {
+          title: 'New Booking! 💈',
+          body: `${booking.clientName || 'Client'} booked ${booking.serviceName || 'Service'} for ${dateStr} at ${timeStr}`,
+        },
+        data: {
+          type: 'new_booking',
+          bookingId: bookingId,
+          serviceName: booking.serviceName || '',
+          clientName: booking.clientName || '',
+        },
+      };
+
+      const response = await admin.messaging().sendEachForMulticast(message);
+      console.log(`${response.successCount} messages were sent successfully`);
+
     } catch (error) {
       console.error('Error sending notification:', error);
     }
@@ -60,19 +82,26 @@ export const stripeWebhook = functions.https.onRequest(async (req, res) => {
   const sig = req.headers['stripe-signature'];
   const endpointSecret = functions.config().stripe.webhook_secret;
 
+  if (!sig) {
+    console.log('No stripe-signature header');
+    res.status(400).send('Webhook Error: No signature');
+    return;
+  }
+
   let event;
 
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
   } catch (err) {
     console.log(`Webhook signature verification failed.`, err);
-    return res.status(400).send(`Webhook Error: ${err}`);
+    res.status(400).send(`Webhook Error: ${err}`);
+    return;
   }
 
   // Handle the event
   switch (event.type) {
     case 'payment_intent.succeeded':
-      const paymentIntent = event.data.object;
+      const paymentIntent = event.data.object as Stripe.PaymentIntent;
       
       // Save booking to Firestore
       await admin.firestore().collection('bookings').add({

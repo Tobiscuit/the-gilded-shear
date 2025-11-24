@@ -14,12 +14,12 @@ service cloud.firestore {
     match /bookings/{bookingId} {
       // Admins can read/write all bookings.
       // Customers can only read/write their own bookings (checked by clientEmail or created by them).
-      allow read, write: if isAdmin() || (
+      allow read, update, delete: if isAdmin() || (
         request.auth != null && (
-          resource == null || // Allow creation
-          resource.data.clientEmail == request.auth.token.email // Allow access if email matches
+          resource.data.clientEmail == request.auth.token.email
         )
       );
+      allow create: if true; // Allow public to book
     }
     
     // Admin users collection - only admin emails can access
