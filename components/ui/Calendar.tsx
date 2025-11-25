@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { generateTimeSlots, isDateAvailable } from '@/lib/booking-utils';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface CalendarProps {
   selectedDate: string;
@@ -69,6 +70,14 @@ export default function Calendar({ selectedDate, onDateSelect, selectedTime, onT
         
         // Filter out booked slots
         const available = allSlots.filter(slot => !bookedSlots.includes(slot));
+        
+        console.log('Availability Check:', {
+          date: selectedDate,
+          allSlots,
+          bookedSlots,
+          available
+        });
+
         setAvailableSlots(available);
         
         // Reset selected time if it's not available for new date
@@ -200,19 +209,26 @@ export default function Calendar({ selectedDate, onDateSelect, selectedTime, onT
           
           {availableSlots.length > 0 ? (
             <div className="grid grid-cols-3 gap-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-              {availableSlots.map((time) => (
-                <button
-                  key={time}
-                  onClick={() => handleTimeClick(time)}
-                  className={`p-2 rounded-lg text-sm font-medium transition-colors ${
-                    selectedTime === time
-                      ? 'bg-yellow-500 text-white'
-                      : 'bg-gray-100 text-gray-900 hover:bg-yellow-100'
-                  }`}
-                >
-                  {time}
-                </button>
-              ))}
+              <AnimatePresence mode="popLayout">
+                {availableSlots.map((time) => (
+                  <motion.button
+                    layout
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.2 }}
+                    key={time}
+                    onClick={() => handleTimeClick(time)}
+                    className={`p-2 rounded-lg text-sm font-medium transition-colors ${
+                      selectedTime === time
+                        ? 'bg-yellow-500 text-white'
+                        : 'bg-gray-100 text-gray-900 hover:bg-yellow-100'
+                    }`}
+                  >
+                    {time}
+                  </motion.button>
+                ))}
+              </AnimatePresence>
             </div>
           ) : (
             <p className="text-gray-500 text-sm">
