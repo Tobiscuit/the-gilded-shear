@@ -70,17 +70,15 @@ export function generateTimeSlots(date: string): string[] {
   const [openHour, openMinute] = hours.open.split(':').map(Number);
   const [closeHour, closeMinute] = hours.close.split(':').map(Number);
   
-  // Check if this is today - use consistent date comparison
-  const today = new Date();
-  today.setUTCHours(0, 0, 0, 0); // Normalize to UTC midnight
-  const selectedDate = new Date(date + 'T00:00:00.000Z');
+  // Check if this is today - use local date comparison
+  // We want to know if the selected date matches the user's *current* local date
+  const now = new Date();
+  const localYear = now.getFullYear();
+  const localMonth = String(now.getMonth() + 1).padStart(2, '0');
+  const localDay = String(now.getDate()).padStart(2, '0');
+  const localDateString = `${localYear}-${localMonth}-${localDay}`;
   
-  // If the date is in the past, no slots available
-  if (selectedDate < today) {
-    return [];
-  }
-  
-  const isToday = selectedDate.getTime() === today.getTime();
+  const isToday = date === localDateString;
   
   // Get current time to filter out past slots for today
   let minHour = openHour;
@@ -89,7 +87,7 @@ export function generateTimeSlots(date: string): string[] {
   if (isToday) {
     // Add buffer time (can't book within X hours of current time)
     const bufferHours = BOOKING_CONFIG.MIN_ADVANCE_BOOKING_HOURS;
-    const now = new Date();
+    // now is already defined above
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
     
