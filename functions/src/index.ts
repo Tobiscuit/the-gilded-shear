@@ -107,48 +107,65 @@ export const stripeWebhook = onRequest({ secrets: [stripeWebhookSecret, stripeSe
   }
 
   // Handle the event
-  switch (event.type) {
-    case 'payment_intent.succeeded':
-      const paymentIntent = event.data.object as Stripe.PaymentIntent;
+  try {
+    switch (event.type) {
+      case 'payment_intent.succeeded':
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        
+        console.log('Processing PaymentIntent:', paymentIntent.id);
+        console.log('Metadata:', paymentIntent.metadata);
+
+        // Extract and map metadata
+        const { 
+          service, 
+          customerName, 
+          customerEmail, 
+          customerPhone, 
+          bookingDate, 
+          bookingTime 
+        } = paymentIntent.metadata || {}; // Handle missing metadata
+
+        if (!bookingDate || !bookingTime) {
+          throw new Error('Missing bookingDate or bookingTime in metadata');
+        }
+
+        // Create Date object from date and time strings
+        // bookingDate: "YYYY-MM-DD", bookingTime: "HH:MM"
+        const appointmentDate = new Date(`${bookingDate}T${bookingTime}:00`);
+        
+        if (isNaN(appointmentDate.getTime())) {
+           throw new Error(`Invalid date created from ${bookingDate}T${bookingTime}:00`);
+        }
+
+        // Save booking to Firestore with correct schema
+        await admin.firestore().collection('bookings').add({
+          clientName: customerName || 'Unknown',
+          clientEmail: customerEmail || 'Unknown',
+          clientPhone: customerPhone || 'Unknown',
+          serviceName: service || 'Unknown Service',
+          appointmentDate: admin.firestore.Timestamp.fromDate(appointmentDate),
+          status: 'confirmed',
+          paymentIntentId: paymentIntent.id,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          amount: paymentIntent.amount,
+          currency: paymentIntent.currency,
+        });
+
+        console.log('PaymentIntent succeeded and booking saved:', paymentIntent.id);
+        break;
       
-      // Extract and map metadata
-      const { 
-        service, 
-        customerName, 
-        customerEmail, 
-        customerPhone, 
-        bookingDate, 
-        bookingTime 
-      } = paymentIntent.metadata;
-
-      // Create Date object from date and time strings
-      // bookingDate: "YYYY-MM-DD", bookingTime: "HH:MM"
-      const appointmentDate = new Date(`${bookingDate}T${bookingTime}:00`);
-
-      // Save booking to Firestore with correct schema
-      await admin.firestore().collection('bookings').add({
-        clientName: customerName,
-        clientEmail: customerEmail,
-        clientPhone: customerPhone,
-        serviceName: service,
-        appointmentDate: admin.firestore.Timestamp.fromDate(appointmentDate),
-        status: 'confirmed',
-        paymentIntentId: paymentIntent.id,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        amount: paymentIntent.amount,
-        currency: paymentIntent.currency,
-      });
-
-      console.log('PaymentIntent succeeded:', paymentIntent.id);
-      break;
-    
-    case 'payment_intent.payment_failed':
-      const failedPayment = event.data.object;
-      console.log('PaymentIntent failed:', failedPayment.id);
-      break;
-    
-    default:
-      console.log(`Unhandled event type ${event.type}`);
+      case 'payment_intent.payment_failed':
+        const failedPayment = event.data.object;
+        console.log('PaymentIntent failed:', failedPayment.id);
+        break;
+      
+      default:
+        console.log(`Unhandled event type ${event.type}`);
+    }
+  } catch (error) {
+    console.error('Error processing webhook event:', error);
+    res.status(500).send(`Error processing event: ${error}`);
+    return;
   }
 
   res.json({received: true});
