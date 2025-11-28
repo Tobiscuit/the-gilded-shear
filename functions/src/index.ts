@@ -60,13 +60,12 @@ export const onBookingCreated = onDocumentCreated("bookings/{bookingId}", async 
       }
 
       // Send multicast message to all tokens
+      // Use data-only message to prevent double notifications (automatic + manual SW)
       const message = {
         tokens: tokens,
-        notification: {
+        data: {
           title: 'New Booking! 💈',
           body: `${booking.clientName || 'Client'} booked ${booking.serviceName || 'Service'} for ${dateStr} at ${timeStr}`,
-        },
-        data: {
           type: 'new_booking',
           bookingId: bookingId,
           serviceName: booking.serviceName || '',

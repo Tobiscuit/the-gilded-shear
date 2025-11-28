@@ -41,6 +41,55 @@ export default function AdminPage() {
     }
   }, []);
 
+  // Listen for foreground messages
+  useEffect(() => {
+    if (!messaging) return;
+
+    const { onMessage } = require('firebase/messaging');
+    const unsubscribe = onMessage(messaging, (payload: any) => {
+      console.log('Foreground message received:', payload);
+      const { title, body } = payload.notification || {};
+      
+      // Show system notification if permission granted
+      if (Notification.permission === 'granted') {
+        new Notification(title || 'New Booking', {
+          body: body || 'Check the dashboard for details',
+          icon: '/icons/icon-192x192.png'
+        });
+      } else {
+        // Fallback for no permission or blocked
+        alert(`${title}: ${body}`);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Listen for foreground messages
+  useEffect(() => {
+    if (!messaging) return;
+
+    const { onMessage } = require('firebase/messaging');
+    const unsubscribe = onMessage(messaging, (payload: any) => {
+      console.log('Foreground message received:', payload);
+      // Read from data because we switched to data-only messages
+      const { title, body } = payload.data || {};
+      
+      // Show system notification if permission granted
+      if (Notification.permission === 'granted') {
+        new Notification(title || 'New Booking', {
+          body: body || 'Check the dashboard for details',
+          icon: '/icons/icon-192x192.png'
+        });
+      } else {
+        // Fallback for no permission or blocked
+        alert(`${title}: ${body}`);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   // Fetch bookings
   useEffect(() => {
     if (!user) return;
