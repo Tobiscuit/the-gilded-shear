@@ -2,10 +2,12 @@ importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js')
 importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js');
 
 firebase.initializeApp({
-  apiKey: "REPLACE_WITH_YOUR_API_KEY", // We need to inject this or hardcode it for the SW
-  projectId: "REPLACE_WITH_YOUR_PROJECT_ID",
-  messagingSenderId: "REPLACE_WITH_YOUR_SENDER_ID",
-  appId: "REPLACE_WITH_YOUR_APP_ID",
+  apiKey: "AIzaSyAwNlkIG3kVxBYMjBRrFH8vPg7wfxl8YCI",
+  authDomain: "the-gilded-shear.firebaseapp.com",
+  projectId: "the-gilded-shear",
+  storageBucket: "the-gilded-shear.firebasestorage.app",
+  messagingSenderId: "434851862135",
+  appId: "1:434851862135:web:7708d772119b52d6759872"
 });
 
 const messaging = firebase.messaging();

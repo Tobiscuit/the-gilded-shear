@@ -88,6 +88,14 @@ export const onBookingCreated = onDocumentCreated("bookings/{bookingId}", async 
           }
         });
         logger.error('List of tokens that caused failures: ' + failedTokens);
+
+        // Remove failed tokens from Firestore
+        if (failedTokens.length > 0) {
+          await admin.firestore().doc('barberProfile/main').update({
+            fcmTokens: admin.firestore.FieldValue.arrayRemove(...failedTokens)
+          });
+          logger.info(`Removed ${failedTokens.length} invalid tokens from barber profile`);
+        }
       }
 
     } catch (error) {
