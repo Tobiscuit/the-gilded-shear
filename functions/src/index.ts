@@ -165,7 +165,27 @@ export const stripeWebhook = onRequest({ secrets: [stripeWebhookSecret, stripeSe
           time24 = `${hours}:${minutes}`;
         }
 
-        const appointmentDate = new Date(`${bookingDate}T${time24}:00`);
+        // Helper to interpret date/time in specific timezone (America/Chicago)
+        // We want to find a UTC timestamp X such that X in Chicago is the booking time.
+        const targetTimezone = 'America/Chicago';
+        const dateStr = `${bookingDate}T${time24}:00`; // e.g. "2025-11-28T16:30:00"
+        
+        // 1. Create a UTC date that matches the wall-clock time
+        const utcGuess = new Date(dateStr + 'Z');
+        
+        // 2. See what time that UTC date is in Chicago
+        // e.g. 16:30 UTC -> 10:30 Chicago
+        const tzString = utcGuess.toLocaleString('en-US', { timeZone: targetTimezone });
+        const tzDate = new Date(tzString); // Parse back as if it were UTC (server local)
+        
+        // 3. Calculate difference
+        // 16:30 - 10:30 = 6 hours
+        const diff = utcGuess.getTime() - tzDate.getTime();
+        
+        // 4. Add difference to original guess to get the correct UTC timestamp
+        // 16:30 UTC + 6 hours = 22:30 UTC
+        // 22:30 UTC in Chicago is 16:30. Correct.
+        const appointmentDate = new Date(utcGuess.getTime() + diff);
         
         if (isNaN(appointmentDate.getTime())) {
            throw new Error(`Invalid date created from ${bookingDate}T${time24}:00 (Original: ${bookingTime})`);
