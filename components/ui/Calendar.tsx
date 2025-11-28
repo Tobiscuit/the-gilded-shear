@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { generateTimeSlots, isDateAvailable } from '@/lib/booking-utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -12,30 +12,21 @@ interface CalendarProps {
 }
 
 export default function Calendar({ selectedDate, onDateSelect, selectedTime, onTimeSelect }: CalendarProps) {
-  const [currentMonth, setCurrentMonth] = useState<Date | null>(null);
+  // Initialize with current date immediately to avoid hydration mismatch
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
-  const [isClient, setIsClient] = useState(false);
 
-  // Handle client-side hydration
-  useEffect(() => {
-    setIsClient(true);
-    setCurrentMonth(new Date());
-  }, []);
-
-  // Generate calendar days for current month
-  const generateCalendarDays = () => {
-    if (!currentMonth) return [];
-    
+  // Generate calendar days - memoized to avoid recalculation
+  const calendarDays = useMemo(() => {
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
     const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
     const startDate = new Date(firstDay);
     startDate.setDate(startDate.getDate() - firstDay.getDay());
 
     const days = [];
     const today = new Date();
-    today.setUTCHours(0, 0, 0, 0); // Use UTC for consistency
+    today.setHours(0, 0, 0, 0);
 
     for (let i = 0; i < 42; i++) {
       const date = new Date(startDate);
@@ -55,20 +46,15 @@ export default function Calendar({ selectedDate, onDateSelect, selectedTime, onT
     }
     
     return days;
-  };
+  }, [currentMonth]);
 
   // Update available time slots when date changes
   useEffect(() => {
     const fetchAvailability = async () => {
       if (selectedDate) {
-        // Generate all possible slots
         const allSlots = generateTimeSlots(selectedDate);
-        
-        // Fetch booked slots from server
         const { getAvailability } = await import('@/app/actions/get-availability');
         const bookedSlots = await getAvailability(selectedDate);
-        
-        // Filter out booked slots
         const available = allSlots.filter(slot => !bookedSlots.includes(slot));
         
         console.log('Availability Check:', {
@@ -80,7 +66,6 @@ export default function Calendar({ selectedDate, onDateSelect, selectedTime, onT
 
         setAvailableSlots(available);
         
-        // Reset selected time if it's not available for new date
         if (selectedTime && !available.includes(selectedTime)) {
           onTimeSelect('');
         }
@@ -101,45 +86,26 @@ export default function Calendar({ selectedDate, onDateSelect, selectedTime, onT
   };
 
   const goToPreviousMonth = () => {
-    if (currentMonth) {
-      setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
-    }
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
   };
 
   const goToNextMonth = () => {
-    if (currentMonth) {
-      setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
-    }
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
   };
 
-  const formatMonthYear = (date: Date | null) => {
-    if (!date) return '';
+  const formatMonthYear = (date: Date) => {
     return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   };
 
   const formatDate = (dateString: string) => {
-    // Create date in UTC to avoid timezone issues
     const date = new Date(dateString + 'T00:00:00.000Z');
     return date.toLocaleDateString('en-US', { 
       weekday: 'long', 
       month: 'long', 
       day: 'numeric',
-      timeZone: 'UTC' // Ensure consistent formatting
+      timeZone: 'UTC'
     });
   };
-
-  const calendarDays = generateCalendarDays();
-
-  // Show loading state until client-side hydration is complete
-  if (!isClient || !currentMonth) {
-    return (
-      <div className="bg-white p-6 rounded-xl border-2 border-gray-200 w-full max-w-md shadow-lg">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-gray-500">Loading calendar...</div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="bg-white p-6 rounded-xl border-2 border-gray-200 w-full max-w-md shadow-lg">

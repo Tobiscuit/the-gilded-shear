@@ -19,11 +19,11 @@ export async function getAvailability(dateString: string) {
     const bookedTimes = snapshot.docs.map(doc => {
       const data = doc.data();
       const date = data.appointmentDate.toDate();
-      // Format as "HH:MM" (e.g., "10:00")
+      // Format as "H:MM AM/PM" to match generateTimeSlots output (e.g., "4:00 PM")
       return date.toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
+        hour: 'numeric', 
         minute: '2-digit', 
-        hour12: false 
+        hour12: true 
       });
     });
 
