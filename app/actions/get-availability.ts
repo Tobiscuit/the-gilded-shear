@@ -1,6 +1,6 @@
 'use server';
 
-import { db, admin } from '@/lib/firebase-admin';
+import { db, Timestamp } from '@/lib/firebase-admin';
 
 export async function getAvailability(dateString: string) {
   try {
@@ -11,8 +11,8 @@ export async function getAvailability(dateString: string) {
 
     const bookingsRef = db.collection('bookings');
     const snapshot = await bookingsRef
-      .where('appointmentDate', '>=', admin.firestore.Timestamp.fromDate(startOfDay))
-      .where('appointmentDate', '<=', admin.firestore.Timestamp.fromDate(endOfDay))
+      .where('appointmentDate', '>=', Timestamp.fromDate(startOfDay))
+      .where('appointmentDate', '<=', Timestamp.fromDate(endOfDay))
       .get();
     
     // Extract booked times
