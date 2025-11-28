@@ -2,6 +2,14 @@
 
 import { db, Timestamp } from '@/lib/firebase-admin';
 
+// Helper: Convert military time to civilian time (same as client)
+function formatTimeForDisplay(militaryTime: string): string {
+  const [hours, minutes] = militaryTime.split(':').map(Number);
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const displayHour = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+  return `${displayHour}:${minutes.toString().padStart(2, '0')} ${period}`;
+}
+
 export async function getMonthAvailability(year: number, month: number) {
   try {
     // Create start and end of month timestamps
@@ -24,6 +32,14 @@ export async function getMonthAvailability(year: number, month: number) {
       const dateObj = data.appointmentDate.toDate();
       const duration = data.serviceDuration || 60; // Default to 60 minutes if missing
       
+      console.log('DEBUG: Booking found:', {
+        id: doc.id,
+        serviceName: data.serviceName,
+        serviceDuration: data.serviceDuration,
+        calculatedDuration: duration,
+        appointmentDate: dateObj.toISOString()
+      });
+      
       // Format date as YYYY-MM-DD
       const dateKey = dateObj.toISOString().split('T')[0];
       
@@ -37,16 +53,26 @@ export async function getMonthAvailability(year: number, month: number) {
       const slotInterval = 30; // Minutes per slot
       const startTime = dateObj.getTime();
 
+      const blockedForThisBooking = [];
       for (let offset = 0; offset < duration; offset += slotInterval) {
         const blockedTime = new Date(startTime + offset * 60000);
-        const blockedTimeStr = blockedTime.toLocaleTimeString('en-US', { 
-          hour: 'numeric', 
-          minute: '2-digit', 
-          hour12: true 
-        });
+        
+        // Format as military time first
+        const hours = blockedTime.getHours();
+        const minutes = blockedTime.getMinutes();
+        const militaryTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        
+        // Then convert to civilian time using the SAME function as client
+        const blockedTimeStr = formatTimeForDisplay(militaryTime);
+        
         bookedSlotsByDate[dateKey].push(blockedTimeStr);
+        blockedForThisBooking.push(blockedTimeStr);
       }
+      
+      console.log('DEBUG: Blocked slots for this booking:', blockedForThisBooking);
     });
+    
+    console.log('DEBUG: Final bookedSlotsByDate:', bookedSlotsByDate);
 
     return bookedSlotsByDate;
   } catch (error) {
