@@ -3,17 +3,27 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
-import { collection, query, orderBy, onSnapshot, Timestamp, where, doc, setDoc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, Timestamp, doc, setDoc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { getToken } from 'firebase/messaging';
 import { auth, db, messaging } from '@/lib/firebase';
 import { Booking } from '@/types';
+import Toast, { ToastType } from '@/components/ui/Toast';
 
 export default function AdminPage() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [notificationPermission, setNotificationPermission] = useState('default');
+  const [toast, setToast] = useState<{ message: string; type: ToastType; isVisible: boolean }>({
+    message: '',
+    type: 'info',
+    isVisible: false
+  });
   const router = useRouter();
+
+  const showToast = (message: string, type: ToastType = 'info') => {
+    setToast({ message, type, isVisible: true });
+  };
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
@@ -48,30 +58,6 @@ export default function AdminPage() {
     const { onMessage } = require('firebase/messaging');
     const unsubscribe = onMessage(messaging, (payload: any) => {
       console.log('Foreground message received:', payload);
-      const { title, body } = payload.notification || {};
-      
-      // Show system notification if permission granted
-      if (Notification.permission === 'granted') {
-        new Notification(title || 'New Booking', {
-          body: body || 'Check the dashboard for details',
-          icon: '/icons/icon-192x192.png'
-        });
-      } else {
-        // Fallback for no permission or blocked
-        alert(`${title}: ${body}`);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  // Listen for foreground messages
-  useEffect(() => {
-    if (!messaging) return;
-
-    const { onMessage } = require('firebase/messaging');
-    const unsubscribe = onMessage(messaging, (payload: any) => {
-      console.log('Foreground message received:', payload);
       // Read from data because we switched to data-only messages
       const { title, body } = payload.data || {};
       
@@ -81,10 +67,10 @@ export default function AdminPage() {
           body: body || 'Check the dashboard for details',
           icon: '/icons/icon-192x192.png'
         });
-      } else {
-        // Fallback for no permission or blocked
-        alert(`${title}: ${body}`);
       }
+      
+      // Always show in-app toast for foreground messages
+      showToast(`${title}: ${body}`, 'info');
     });
 
     return () => unsubscribe();
@@ -114,6 +100,7 @@ export default function AdminPage() {
       router.push('/login');
     } catch (error) {
       console.error('Error signing out:', error);
+      showToast('Error signing out', 'error');
     }
   };
 
@@ -148,11 +135,12 @@ export default function AdminPage() {
               updatedAt: Timestamp.now()
             });
           }
-          alert('Notifications enabled!');
+          showToast('Notifications enabled successfully!', 'success');
         }
       }
     } catch (error) {
       console.error('Error requesting notification permission:', error);
+      showToast('Failed to enable notifications', 'error');
     }
   };
 
@@ -301,6 +289,14 @@ export default function AdminPage() {
           )}
         </div>
       </main>
+
+      {/* Toast Notification */}
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.isVisible}
+        onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
+      />
     </div>
   );
 }
