@@ -48,32 +48,64 @@ export default function Calendar({ selectedDate, onDateSelect, selectedTime, onT
     return days;
   }, [currentMonth]);
 
-  // Update available time slots when date changes
-  useEffect(() => {
-    const fetchAvailability = async () => {
-      if (selectedDate) {
-        const allSlots = generateTimeSlots(selectedDate);
-        const { getAvailability } = await import('@/app/actions/get-availability');
-        const bookedSlots = await getAvailability(selectedDate);
-        const available = allSlots.filter(slot => !bookedSlots.includes(slot));
-        
-        console.log('Availability Check:', {
-          date: selectedDate,
-          allSlots,
-          bookedSlots,
-          available
-        });
+  // Cache for monthly availability: { "YYYY-M": { "YYYY-MM-DD": ["4:00 PM"] } }
+  const [monthlyAvailability, setMonthlyAvailability] = useState<Record<string, Record<string, string[]>>>({});
+  const [isLoadingMonth, setIsLoadingMonth] = useState(false);
 
-        setAvailableSlots(available);
+  // Fetch availability for the current month when it changes
+  useEffect(() => {
+    const fetchMonthData = async () => {
+      const year = currentMonth.getFullYear();
+      const month = currentMonth.getMonth();
+      const cacheKey = `${year}-${month}`;
+
+      // If we already have data for this month, don't fetch again
+      if (monthlyAvailability[cacheKey]) {
+        return;
+      }
+
+      setIsLoadingMonth(true);
+      try {
+        const { getMonthAvailability } = await import('@/app/actions/get-month-availability');
+        const data = await getMonthAvailability(year, month);
         
-        if (selectedTime && !available.includes(selectedTime)) {
-          onTimeSelect('');
-        }
+        setMonthlyAvailability(prev => ({
+          ...prev,
+          [cacheKey]: data
+        }));
+      } catch (error) {
+        console.error('Error fetching month availability:', error);
+      } finally {
+        setIsLoadingMonth(false);
       }
     };
 
-    fetchAvailability();
-  }, [selectedDate, selectedTime, onTimeSelect]);
+    fetchMonthData();
+  }, [currentMonth, monthlyAvailability]);
+
+  // Update available time slots instantly when date changes
+  useEffect(() => {
+    if (selectedDate) {
+      const allSlots = generateTimeSlots(selectedDate);
+      
+      // Get booked slots from our local cache
+      // selectedDate is "YYYY-MM-DD"
+      const bookedSlots = Object.values(monthlyAvailability).reduce((acc, monthData) => {
+        if (monthData[selectedDate]) {
+          return monthData[selectedDate];
+        }
+        return acc;
+      }, [] as string[]) || [];
+
+      const available = allSlots.filter(slot => !bookedSlots.includes(slot));
+      
+      setAvailableSlots(available);
+      
+      if (selectedTime && !available.includes(selectedTime)) {
+        onTimeSelect('');
+      }
+    }
+  }, [selectedDate, monthlyAvailability, selectedTime, onTimeSelect]);
 
   const handleDateClick = (date: string, isAvailable: boolean) => {
     if (isAvailable) {

@@ -1,6 +1,7 @@
 import { onRequest, onCall, HttpsError } from "firebase-functions/v2/https";
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
 import { defineSecret } from "firebase-functions/params";
+import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
 import Stripe from "stripe";
 
@@ -24,18 +25,19 @@ export const onBookingCreated = onDocumentCreated("bookings/{bookingId}", async 
     const bookingId = event.params.bookingId;
 
     if (!booking) {
-      console.log('No booking data found');
+      logger.warn('No booking data found for event', { bookingId });
       return;
     }
 
     try {
       // Get barber profile for FCM tokens
+      // Note: This sends notifications ONLY to the barber, not the client
       const barberProfileSnap = await admin.firestore()
         .doc('barberProfile/main')
         .get();
 
       if (!barberProfileSnap.exists) {
-        console.log('No barber profile found');
+        logger.warn('No barber profile found');
         return;
       }
 
@@ -43,7 +45,7 @@ export const onBookingCreated = onDocumentCreated("bookings/{bookingId}", async 
       const tokens = (barberData?.fcmTokens || []) as string[];
 
       if (tokens.length === 0) {
-        console.log('No FCM tokens found for barber');
+        logger.info('No FCM tokens found for barber, skipping notification');
         return;
       }
 
@@ -73,10 +75,23 @@ export const onBookingCreated = onDocumentCreated("bookings/{bookingId}", async 
       };
 
       const response = await admin.messaging().sendEachForMulticast(message);
-      console.log(`${response.successCount} messages were sent successfully`);
+      logger.info('Notification sent', { 
+        successCount: response.successCount, 
+        failureCount: response.failureCount 
+      });
+
+      if (response.failureCount > 0) {
+        const failedTokens: string[] = [];
+        response.responses.forEach((resp, idx) => {
+          if (!resp.success) {
+            failedTokens.push(tokens[idx]);
+          }
+        });
+        logger.error('List of tokens that caused failures: ' + failedTokens);
+      }
 
     } catch (error) {
-      console.error('Error sending notification:', error);
+      logger.error('Error sending notification:', error);
     }
 });
 
@@ -87,7 +102,7 @@ export const stripeWebhook = onRequest({ secrets: [stripeWebhookSecret, stripeSe
   const stripe = getStripe();
 
   if (!sig) {
-    console.log('No stripe-signature header');
+    logger.warn('No stripe-signature header');
     res.status(400).send('Webhook Error: No signature');
     return;
   }
@@ -101,7 +116,7 @@ export const stripeWebhook = onRequest({ secrets: [stripeWebhookSecret, stripeSe
     
     event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
   } catch (err) {
-    console.log(`Webhook signature verification failed.`, err);
+    logger.error(`Webhook signature verification failed.`, err);
     res.status(400).send(`Webhook Error: ${err}`);
     return;
   }
@@ -112,8 +127,8 @@ export const stripeWebhook = onRequest({ secrets: [stripeWebhookSecret, stripeSe
       case 'payment_intent.succeeded':
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
         
-        console.log('Processing PaymentIntent:', paymentIntent.id);
-        console.log('Metadata:', paymentIntent.metadata);
+        logger.info('Processing PaymentIntent:', { id: paymentIntent.id });
+        logger.debug('Metadata:', paymentIntent.metadata);
 
         // Extract and map metadata
         const { 
@@ -130,11 +145,30 @@ export const stripeWebhook = onRequest({ secrets: [stripeWebhookSecret, stripeSe
         }
 
         // Create Date object from date and time strings
-        // bookingDate: "YYYY-MM-DD", bookingTime: "HH:MM"
-        const appointmentDate = new Date(`${bookingDate}T${bookingTime}:00`);
+        // bookingDate: "YYYY-MM-DD", bookingTime: "H:MM AM/PM" or "HH:MM"
+        
+        let time24 = bookingTime;
+        
+        // Convert 12-hour format to 24-hour format if needed
+        if (bookingTime.includes('AM') || bookingTime.includes('PM')) {
+          const [time, modifier] = bookingTime.split(' ');
+          let [hours, minutes] = time.split(':');
+          
+          if (hours === '12') {
+            hours = '00';
+          }
+          
+          if (modifier === 'PM') {
+            hours = parseInt(hours, 10) + 12 + '';
+          }
+          
+          time24 = `${hours}:${minutes}`;
+        }
+
+        const appointmentDate = new Date(`${bookingDate}T${time24}:00`);
         
         if (isNaN(appointmentDate.getTime())) {
-           throw new Error(`Invalid date created from ${bookingDate}T${bookingTime}:00`);
+           throw new Error(`Invalid date created from ${bookingDate}T${time24}:00 (Original: ${bookingTime})`);
         }
 
         // Save booking to Firestore with correct schema
@@ -151,19 +185,19 @@ export const stripeWebhook = onRequest({ secrets: [stripeWebhookSecret, stripeSe
           currency: paymentIntent.currency,
         });
 
-        console.log('PaymentIntent succeeded and booking saved:', paymentIntent.id);
+        logger.info('PaymentIntent succeeded and booking saved:', { id: paymentIntent.id });
         break;
       
       case 'payment_intent.payment_failed':
         const failedPayment = event.data.object;
-        console.log('PaymentIntent failed:', failedPayment.id);
+        logger.warn('PaymentIntent failed:', { id: failedPayment.id });
         break;
       
       default:
-        console.log(`Unhandled event type ${event.type}`);
+        logger.info(`Unhandled event type ${event.type}`);
     }
   } catch (error) {
-    console.error('Error processing webhook event:', error);
+    logger.error('Error processing webhook event:', error);
     res.status(500).send(`Error processing event: ${error}`);
     return;
   }
@@ -212,7 +246,7 @@ export const getBookingStats = onCall(async (request) => {
 
     return stats;
   } catch (error) {
-    console.error('Error getting booking stats:', error);
+    logger.error('Error getting booking stats:', error);
     throw new HttpsError('internal', 'Failed to get booking stats');
   }
 });
