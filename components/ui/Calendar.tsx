@@ -59,11 +59,8 @@ export default function Calendar({ selectedDate, onDateSelect, selectedTime, onT
       const month = currentMonth.getMonth();
       const cacheKey = `${year}-${month}`;
 
-      // If we already have data for this month, don't fetch again
-      if (monthlyAvailability[cacheKey]) {
-        return;
-      }
-
+      // Always fetch fresh data to ensure we see new bookings
+      // (Cache was preventing new bookings from showing as unavailable)
       setIsLoadingMonth(true);
       try {
         const { getMonthAvailability } = await import('@/app/actions/get-month-availability');
@@ -81,7 +78,7 @@ export default function Calendar({ selectedDate, onDateSelect, selectedTime, onT
     };
 
     fetchMonthData();
-  }, [currentMonth, monthlyAvailability]);
+  }, [currentMonth]); // Removed monthlyAvailability dependency to always refetch
 
   // Update available time slots instantly when date changes
   useEffect(() => {
