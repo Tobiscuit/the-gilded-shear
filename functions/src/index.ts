@@ -1,9 +1,10 @@
-import { onRequest, onCall, HttpsError } from "firebase-functions/v2/https";
-import { onDocumentCreated } from "firebase-functions/v2/firestore";
-import { defineSecret } from "firebase-functions/params";
-import * as logger from "firebase-functions/logger";
-import * as admin from "firebase-admin";
-import Stripe from "stripe";
+import { defineSecret } from 'firebase-functions/params';
+import { onDocumentCreated } from 'firebase-functions/v2/firestore';
+import { onRequest, onCall, HttpsError } from 'firebase-functions/v2/https';
+import { logger } from 'firebase-functions/v2';
+import * as admin from 'firebase-admin';
+import Stripe from 'stripe';
+import { SERVICES } from '../../lib/booking-utils';
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -198,12 +199,17 @@ export const stripeWebhook = onRequest({ secrets: [stripeWebhookSecret, stripeSe
            throw new Error(`Invalid date created from ${bookingDate}T${time24}:00 (Original: ${bookingTime})`);
         }
 
+        // Look up service duration from SERVICES array
+        const selectedService = SERVICES.find(s => s.name === service);
+        const serviceDuration = selectedService?.duration || 60; // Default to 60 minutes
+
         // Save booking to Firestore with correct schema
         await admin.firestore().collection('bookings').add({
           clientName: customerName || 'Unknown',
           clientEmail: customerEmail || 'Unknown',
           clientPhone: customerPhone || 'Unknown',
           serviceName: service || 'Unknown Service',
+          serviceDuration: serviceDuration, // NEW: Store duration for overlap prevention
           appointmentDate: admin.firestore.Timestamp.fromDate(appointmentDate),
           status: 'confirmed',
           paymentIntentId: paymentIntent.id,

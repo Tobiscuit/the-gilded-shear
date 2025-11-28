@@ -22,21 +22,30 @@ export async function getMonthAvailability(year: number, month: number) {
     snapshot.docs.forEach(doc => {
       const data = doc.data();
       const dateObj = data.appointmentDate.toDate();
+      const duration = data.serviceDuration || 60; // Default to 60 minutes if missing
       
       // Format date as YYYY-MM-DD
       const dateKey = dateObj.toISOString().split('T')[0];
       
-      // Format time as "H:MM AM/PM"
-      const timeStr = dateObj.toLocaleTimeString('en-US', { 
-        hour: 'numeric', 
-        minute: '2-digit', 
-        hour12: true 
-      });
-
       if (!bookedSlotsByDate[dateKey]) {
         bookedSlotsByDate[dateKey] = [];
       }
-      bookedSlotsByDate[dateKey].push(timeStr);
+
+      // Calculate all blocked slots within the service duration
+      // For a 60-min service at 4:00 PM, block: [4:00 PM, 4:30 PM]
+      // For a 25-min service at 4:00 PM, block: [4:00 PM] only
+      const slotInterval = 30; // Minutes per slot
+      const startTime = dateObj.getTime();
+
+      for (let offset = 0; offset < duration; offset += slotInterval) {
+        const blockedTime = new Date(startTime + offset * 60000);
+        const blockedTimeStr = blockedTime.toLocaleTimeString('en-US', { 
+          hour: 'numeric', 
+          minute: '2-digit', 
+          hour12: true 
+        });
+        bookedSlotsByDate[dateKey].push(blockedTimeStr);
+      }
     });
 
     return bookedSlotsByDate;
