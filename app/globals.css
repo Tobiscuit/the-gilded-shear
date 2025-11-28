@@ -10,6 +10,7 @@ body {
   color: #e2e8f0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior-y: none; /* Disables pull-to-refresh */
 }
 
 h1, h2, h3, h4, h5, h6 {
