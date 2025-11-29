@@ -57,10 +57,18 @@ export async function getMonthAvailability(year: number, month: number) {
       for (let offset = 0; offset < duration; offset += slotInterval) {
         const blockedTime = new Date(startTime + offset * 60000);
         
-        // Format as military time first
-        const hours = blockedTime.getHours();
-        const minutes = blockedTime.getMinutes();
-        const militaryTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        // CRITICAL: Convert UTC timestamp to Chicago timezone before formatting
+        // The stored timestamp is in UTC, but we need to format it as Chicago local time
+        const chicagoTimeString = blockedTime.toLocaleString('en-US', { 
+          timeZone: 'America/Chicago',
+          hour12: false,
+          hour: '2-digit',
+          minute: '2-digit'
+        }); // Returns "HH:MM" in Chicago time
+        
+        // Parse the Chicago time string to get hours and minutes
+        const [hoursStr, minutesStr] = chicagoTimeString.split(':');
+        const militaryTime = `${hoursStr}:${minutesStr}`;
         
         // Then convert to civilian time using the SAME function as client
         const blockedTimeStr = formatTimeForDisplay(militaryTime);

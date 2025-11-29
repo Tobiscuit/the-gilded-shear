@@ -195,6 +195,16 @@ export const stripeWebhook = onRequest({ secrets: [stripeWebhookSecret, stripeSe
         // 22:30 UTC in Chicago is 16:30. Correct.
         const appointmentDate = new Date(utcGuess.getTime() + diff);
         
+        logger.info('Timezone calculation:', {
+          input: `${bookingDate} ${bookingTime}`,
+          time24,
+          utcGuess: utcGuess.toISOString(),
+          tzString,
+          diff,
+          finalUTC: appointmentDate.toISOString(),
+          inChicago: appointmentDate.toLocaleString('en-US', { timeZone: 'America/Chicago' })
+        });
+        
         if (isNaN(appointmentDate.getTime())) {
            throw new Error(`Invalid date created from ${bookingDate}T${time24}:00 (Original: ${bookingTime})`);
         }
