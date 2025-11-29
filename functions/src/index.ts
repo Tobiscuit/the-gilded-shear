@@ -50,14 +50,27 @@ export const onBookingCreated = onDocumentCreated("bookings/{bookingId}", async 
         return;
       }
 
-      // Format date safely
+      // Format date safely in America/Chicago timezone
       let dateStr = 'Unknown Date';
       let timeStr = 'Unknown Time';
       
       if (booking.appointmentDate && typeof booking.appointmentDate.toDate === 'function') {
         const dateObj = booking.appointmentDate.toDate();
-        dateStr = dateObj.toLocaleDateString();
-        timeStr = dateObj.toLocaleTimeString();
+        
+        // CRITICAL: Format in America/Chicago timezone (not server timezone)
+        dateStr = dateObj.toLocaleDateString('en-US', { 
+          timeZone: 'America/Chicago',
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        });  // "Nov 29, 2025"
+        
+        timeStr = dateObj.toLocaleTimeString('en-US', { 
+          timeZone: 'America/Chicago',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        });  // "4:00 PM"
       }
 
       // Send multicast message to all tokens

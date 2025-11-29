@@ -104,3 +104,6 @@ mcp.json
 
 
 docs-private/*
+
+# Portfolio documentation (personal, not for repo)
+portfolio-docs/
