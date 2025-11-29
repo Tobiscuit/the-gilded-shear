@@ -63,12 +63,12 @@ export default function CustomerForm({ customerInfo, onInfoChange }: CustomerFor
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl border-2 border-gray-200 shadow-lg">
+    <div className="bg-white p-8 rounded-xl border-2 border-[#c8a46e]/30 shadow-2xl">
       
-      <div className="space-y-4">
+      <div className="space-y-6">
         {/* Name Field */}
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="name" className="block text-sm font-semibold text-[#0A192F] mb-2">
             Full Name *
           </label>
           <input
@@ -76,19 +76,22 @@ export default function CustomerForm({ customerInfo, onInfoChange }: CustomerFor
             id="name"
             value={customerInfo.name}
             onChange={(e) => handleInputChange('name', e.target.value)}
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 ${
-              errors.name ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-4 py-3 border-2 rounded-lg 
+              bg-gray-50 text-[#0A192F] placeholder-gray-500
+              focus:outline-none focus:ring-2 focus:ring-[#c8a46e] focus:border-[#c8a46e]
+              transition-all duration-200 ${
+              errors.name ? 'border-red-500 focus:ring-red-500' : 'border-[#c8a46e]/30 hover:border-[#c8a46e]/50'
             }`}
-            placeholder="Enter your full name"
+            placeholder="John Smith"
           />
           {errors.name && (
-            <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+            <p className="text-red-500 text-sm mt-2 font-medium">⚠ {errors.name}</p>
           )}
         </div>
 
         {/* Email Field */}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="email" className="block text-sm font-semibold text-[#0A192F] mb-2">
             Email Address *
           </label>
           <input
@@ -96,19 +99,22 @@ export default function CustomerForm({ customerInfo, onInfoChange }: CustomerFor
             id="email"
             value={customerInfo.email}
             onChange={(e) => handleInputChange('email', e.target.value)}
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 ${
-              errors.email ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-4 py-3 border-2 rounded-lg 
+              bg-gray-50 text-[#0A192F] placeholder-gray-500
+              focus:outline-none focus:ring-2 focus:ring-[#c8a46e] focus:border-[#c8a46e]
+              transition-all duration-200 ${
+              errors.email ? 'border-red-500 focus:ring-red-500' : 'border-[#c8a46e]/30 hover:border-[#c8a46e]/50'
             }`}
-            placeholder="Enter your email address"
+            placeholder="john@example.com"
           />
           {errors.email && (
-            <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+            <p className="text-red-500 text-sm mt-2 font-medium">⚠ {errors.email}</p>
           )}
         </div>
 
         {/* Phone Field */}
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="phone" className="block text-sm font-semibold text-[#0A192F] mb-2">
             Phone Number *
           </label>
           <input
@@ -116,25 +122,33 @@ export default function CustomerForm({ customerInfo, onInfoChange }: CustomerFor
             id="phone"
             value={customerInfo.phone}
             onChange={(e) => handleInputChange('phone', e.target.value)}
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 ${
-              errors.phone ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-4 py-3 border-2 rounded-lg 
+              bg-gray-50 text-[#0A192F] placeholder-gray-500
+              focus:outline-none focus:ring-2 focus:ring-[#c8a46e] focus:border-[#c8a46e]
+              transition-all duration-200 ${
+              errors.phone ? 'border-red-500 focus:ring-red-500' : 'border-[#c8a46e]/30 hover:border-[#c8a46e]/50'
             }`}
-            placeholder="Enter your phone number"
+            placeholder="(555) 123-4567"
           />
           {errors.phone && (
-            <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
+            <p className="text-red-500 text-sm mt-2 font-medium">⚠ {errors.phone}</p>
           )}
         </div>
       </div>
 
       {/* Form Validation Status */}
-      <div className="mt-4">
+      <div className="mt-6 pt-6 border-t border-[#c8a46e]/20">
         {isFormValid() ? (
-          <p className="text-green-600 text-sm font-medium">
-            ✓ All information looks good!
-          </p>
+          <div className="flex items-center gap-2 text-green-600">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            <p className="text-sm font-semibold">
+              All information looks good!
+            </p>
+          </div>
         ) : (
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-600 text-sm font-medium">
             Please fill in all required fields correctly.
           </p>
         )}
