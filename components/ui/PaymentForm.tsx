@@ -90,29 +90,46 @@ function PaymentFormContent({
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl border-2 border-gray-200 shadow-lg max-w-md mx-auto">
-      <h3 className="text-xl font-display font-bold mb-4 text-gray-900">
+    <div className="bg-white p-8 rounded-xl border-2 border-[#c8a46e]/30 shadow-2xl max-w-md mx-auto">
+      <h3 className="text-2xl font-display font-bold mb-6 text-[#0A192F]">
         Complete Your Booking
       </h3>
       
       {/* Booking Summary */}
-      <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-        <h4 className="font-bold text-gray-900 mb-2">Booking Details</h4>
-        <div className="text-sm text-gray-600 space-y-1">
-          <p><strong>Service:</strong> {selectedService}</p>
-          <p><strong>Date:</strong> {new Date(selectedDate).toLocaleDateString('en-US', { 
-            weekday: 'long', 
-            month: 'long', 
-            day: 'numeric' 
-          })}</p>
-          <p><strong>Time:</strong> {selectedTime}</p>
-          <p><strong>Duration:</strong> {service.duration} minutes</p>
-          <p><strong>Total:</strong> ${(service.price / 100).toFixed(2)}</p>
+      <div className="mb-8 p-6 bg-gradient-to-br from-[#0A192F] to-[#112240] rounded-lg border border-[#c8a46e]/20">
+        <h4 className="font-bold text-[#c8a46e] mb-4 text-lg">Booking Details</h4>
+        <div className="text-sm text-gray-200 space-y-3">
+          <div className="flex justify-between items-center">
+            <span className="text-gray-400">Service:</span>
+            <span className="font-semibold">{selectedService}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-gray-400">Date:</span>
+            <span className="font-semibold">{new Date(selectedDate).toLocaleDateString('en-US', { 
+              weekday: 'short', 
+              month: 'short', 
+              day: 'numeric' 
+            })}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-gray-400">Time:</span>
+            <span className="font-semibold">{selectedTime}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-gray-400">Duration:</span>
+            <span className="font-semibold">{service.duration} min</span>
+          </div>
+          <div className="pt-3 border-t border-[#c8a46e]/30">
+            <div className="flex justify-between items-center">
+              <span className="text-[#c8a46e] font-bold">Total:</span>
+              <span className="text-[#c8a46e] font-bold text-xl">${(service.price / 100).toFixed(2)}</span>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Payment Form */}
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <PaymentElement 
           options={{
             layout: 'tabs',
@@ -120,25 +137,26 @@ function PaymentFormContent({
         />
         
         {errorMessage && (
-          <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">
-            {errorMessage}
+          <div className="text-red-600 text-sm bg-red-50 p-4 rounded-lg border border-red-200 font-medium">
+            ⚠ {errorMessage}
           </div>
         )}
         
         <button
           type="submit"
           disabled={!stripe || !elements || isProcessing}
-          className={`w-full py-3 px-4 rounded-lg font-bold text-white transition-colors ${
+          className={`w-full py-4 px-6 rounded-lg font-bold text-white text-lg
+            shadow-lg transition-all duration-200 ${
             !stripe || !elements || isProcessing
               ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-yellow-600 hover:bg-yellow-700'
+              : 'bg-gradient-to-r from-[#c8a46e] to-[#a68a5a] hover:shadow-xl hover:scale-[1.02]'
           }`}
         >
           {isProcessing ? 'Processing...' : `Pay $${(service.price / 100).toFixed(2)}`}
         </button>
       </form>
 
-      <p className="text-xs text-gray-500 mt-4 text-center">
+      <p className="text-xs text-gray-600 mt-6 text-center leading-relaxed">
         Your payment is secure and encrypted. We use Stripe for payment processing.
       </p>
     </div>
