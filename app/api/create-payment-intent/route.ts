@@ -18,7 +18,7 @@ if (!secretKey.startsWith('sk_test_') && !secretKey.startsWith('sk_live_')) {
 }
 
 const stripe = new Stripe(secretKey, {
-  apiVersion: '2025-11-17.clover',
+  apiVersion: '2026-01-28.clover',
 });
 
 export async function POST(request: NextRequest) {

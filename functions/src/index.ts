@@ -16,7 +16,7 @@ const stripeWebhookSecret = defineSecret("STRIPE_WEBHOOK_SECRET");
 // Initialize Stripe (Lazy initialization inside functions to access secrets)
 const getStripe = () => {
   return new Stripe(stripeSecretKey.value(), {
-    apiVersion: '2025-11-17.clover',
+    apiVersion: '2026-01-28.clover',
   });
 };
 
